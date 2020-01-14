@@ -1,0 +1,28 @@
+Data inserimento: Jan 09, 2020
+
+Lista dei componenti: Gianluca Aguzzi 890892
+Andrea Petreti 901787
+
+Proposta di progetto: Sistema di monitoraggio e allarme per l'innalzamento del livello dell'acqua nei fiumi:
+il nostro obiettivo è quello di creare una rete di sensori/ dispositivi intelligenti a basso costo per controllare il verificarsi di allagamenti. I dati raccolti verranno collezionati e analizzati in una piattaforma cloud (ad es. AWS).
+
+L'idea è quella di costruire un prototipo composto da due stazioni distinte:
+
+1) stazione 1, che valuta il livello di innalzamento del fiume, utilizzando un sensore
+ultrasonico posizionato in un punto sopraelevato;
+
+2) stazione 2, che raccoglie dati su:
+- precipitazioni, basandosi su un pluviometro;
+- umidità del suolo, basandosi su un igrometro per terreno.
+Tali dati potranno essere utilizzati per effettuare previsioni di esondazioni.
+
+Inoltre, il sistema, composto dalle due stazioni, sarà dotato di:
+- modulo GSM per l'invio dei dati al cloud;
+- modulo GPS per individuare la posizione della stazione;
+- microcontrollore ESP32.
+
+La stesura di questa proposta di progetto si basa parzialmente su:
+- https://www.usgs.gov/faqs/how-are-floods-predicted?qt-news_science_products=0#qt-news_science_products
+- https://www.mdpi.com/1424-8220/19/1/127
+
+Referente: Andrea Petreti andrea.petreti@studio.unibo.it
