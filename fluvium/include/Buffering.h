@@ -1,13 +1,15 @@
 #pragma once
+
 #include <iostream>
 #include <string.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 #include "Util.h"
+
 namespace buffering {
     using data_type = uint8_t;
     using csv = std::string;
-    struct Data { 
+    struct Data {
         data_type id; 
         long timestap;
 
@@ -19,26 +21,24 @@ namespace buffering {
 
     class Buffer {
         private:
-            QueueHandle_t xQueue;
+            const QueueHandle_t xQueue;
         public:
-            Buffer(int size) {
-                xQueue = xQueueCreate(size, sizeof(Data *));
-            }
-            bool queue(Data* data) {
+            Buffer(int size) : xQueue(xQueueCreate(size, sizeof(Data *))) {};
+            bool queue(const Data* data) const {
                 return xQueueSend(xQueue, &data, portMAX_DELAY) == pdTRUE;
             }
 
-            void clear() {
+            void clear() const {
                 xQueueReset(xQueue);
             }
 
-            Data* dequeue() {
+            Data* dequeue() const {
                 Data* data;
                 xQueueReceive(xQueue, &data, portMAX_DELAY);
                 return data;
             }
 
-            bool isEmpty() {
+            bool isEmpty() const {
                 return false; 
             }
     };
@@ -51,15 +51,15 @@ namespace buffering {
                 this->parsingType = parsingType;
             }
             /*format output: csv.*/
-            csv parse(Data& data){
+            csv serialize(const Data& data){
                 if(data.id == this->parsingType) {
-                    return doParse(data);
+                    return doSerialize(data);
                 } else {
-                    return NULL;
+                    return "";
                 }
             }
 
         protected:
-            virtual csv doParse(Data& data);
+            virtual csv doSerialize(const Data& data);
     };
 }

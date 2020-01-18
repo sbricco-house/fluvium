@@ -21,7 +21,7 @@ namespace buffering {
             public:
                 WaterLevelParser() : Parser(waterLevelType) {}
             protected: 
-                csv doParse(Data& data) override {
+                csv doSerialize(const Data& data) override {
                     data::WaterLevel& level = *(data::WaterLevel*)(&data);
                     char buffer[parser_buffer_size];
                     sprintf(buffer, "%d;%ld", level.level, level.timestap);
