@@ -1,16 +1,18 @@
 #pragma once
 #include "Buffering.h"
 #include "Task.h"
+#include "Metric.h"
+#include "DistanceSensor.h"
+#include "TemperatureSensor.h"
 #include <cstdio>
-
+#include <driver/gpio.h>
 namespace buffering {
     #define waterLevelType 1
 
     namespace data {
-        using millimeter = uint16_t; //max value: 65 m
         struct WaterLevel : public Data {
-            millimeter level;
-            WaterLevel(millimeter level) : Data(waterLevelType) {
+            metric::meter level;
+            WaterLevel(metric::meter level) : Data(waterLevelType) {
                 this->level = level;
             }
         };
@@ -24,7 +26,7 @@ namespace buffering {
                 csv doSerialize(const Data& data) override {
                     data::WaterLevel& level = *(data::WaterLevel*)(&data);
                     char buffer[parser_buffer_size];
-                    sprintf(buffer, "%d;%ld", level.level, level.timestap);
+                    sprintf(buffer, "%.4lf;%ld", level.level, level.timestap);
                     return csv(buffer);
                 }
         };
@@ -32,9 +34,32 @@ namespace buffering {
 }
 namespace task {
     class WaterLevelTask : public Task {
+        private:
+            int samplingCount;
+            device::DistanceSensor& distanceSensor;
+            device::TemperatureSensor& temperatureSensor;
         public:
+            WaterLevelTask(
+                        const Buffer& buffer,
+                        device::DistanceSensor& distSens, 
+                        device::TemperatureSensor& tempSens, 
+                        int distanceSampling) :
+                Task(buffer), 
+                samplingCount(distanceSampling),
+                distanceSensor(distSens),
+                temperatureSensor(tempSens) {    
+                    distanceSensor.init();
+                    temperatureSensor.init();
+                }
+            
             void run() override {
-
+                float distanceSensed = 0;
+                float temp = temperatureSensor.senseTemperature();
+                for(int i = 0; i < samplingCount; i++) {
+                    distanceSensed += distanceSensor.senseDistance(temp);
+                }
+                auto data = buffering::data::WaterLevel(distanceSensed / samplingCount);
+                printf("LOG: %.4lf;%ld\n", data.level, data.timestap);
             }
     };
 }

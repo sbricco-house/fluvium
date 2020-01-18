@@ -1,13 +1,26 @@
 #pragma once
 
 #include <sys/time.h>
+#include <freertos/task.h>
 #include <cmath>
 
 namespace timeutils {
-    static inline long timestampMs() {
+    using microsecond = long long;
+    using millisecond = uint_fast32_t;
+    using second = double;
+
+    static inline second usToS(microsecond us) {
+        return us / 1000000.0;
+    }
+    static inline millisecond timestampMs() {
         struct timeval tp;
         gettimeofday(&tp, NULL);
         return tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    }
+    static inline microsecond timestampUs() {
+        struct timeval tp;
+        gettimeofday(&tp, NULL);
+        return tp.tv_sec * 1000000L + tp.tv_usec;
     }
 };
 
