@@ -1,8 +1,10 @@
 #pragma once
 
 #include <sys/time.h>
+#include <time.h>
 #include <freertos/task.h>
 #include <cmath>
+#include "nmea_parser.h"
 
 namespace timeutils {
     using microsecond = long long;
