@@ -58,8 +58,8 @@ namespace task {
                 for(int i = 0; i < samplingCount; i++) {
                     distanceSensed += distanceSensor.senseDistance(temp);
                 }
-                auto data = buffering::data::WaterLevel(distanceSensed / samplingCount);
-                printf("LOG: %.4lf;%ld\n", data.level, data.timestap);
+                auto data = new buffering::data::WaterLevel(distanceSensed / samplingCount);
+                buffer.queue(data);
             }
     };
 }
