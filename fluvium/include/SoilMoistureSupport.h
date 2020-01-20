@@ -7,9 +7,9 @@
 using namespace device;
 
 namespace support {
-    class SoilMoistureSupport : public SoilMoistureSensor {
+    class SparkFunMoisture : public SoilMoistureSensor {
+        #define MAX_INPUT_VOLTAGE 2.2
         private:
-            static const double MAX_INPUT_VOLTAGE = 2.2;
             static const adc_atten_t ATTENUATION = ADC_ATTEN_DB_6; // max input 2.2v
             static const short MIN_SOIL_MOISTURE = 0;
             static const short MAX_SOIL_MOISTURE = 100;
@@ -18,7 +18,7 @@ namespace support {
             const adc_bits_width_t precision;
 
         public:
-            SoilMoistureSupport(gpio_num_t powerPin, adc1_channel_t channel, adc_bits_width_t precision) : 
+            SparkFunMoisture(gpio_num_t powerPin, adc1_channel_t channel, adc_bits_width_t precision) : 
                 powerPin(powerPin), channel(channel), precision(precision) {};
 
             void init() override {

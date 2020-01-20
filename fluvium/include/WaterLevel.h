@@ -11,10 +11,8 @@ namespace buffering {
 
     namespace data {
         struct WaterLevel : public Data {
-            metric::meter level;
-            WaterLevel(metric::meter level) : Data(waterLevelType) {
-                this->level = level;
-            }
+            const metric::meter level;
+            WaterLevel(metric::meter level) : Data(waterLevelType), level(level) {}
         };
     }
     namespace parser {
@@ -35,7 +33,7 @@ namespace buffering {
 namespace task {
     class WaterLevelTask : public Task {
         private:
-            int samplingCount;
+            const int samplingCount;
             device::DistanceSensor& distanceSensor;
             device::TemperatureSensor& temperatureSensor;
         public:

@@ -9,7 +9,7 @@
 
 extern "C" void app_main();
 extern "C" void modem_event(void* event_handler_arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
-
+/*
 void app_main() {
     tcpip_adapter_init();
 
@@ -22,23 +22,23 @@ void app_main() {
 
     dce->set_flow_ctrl(dce, MODEM_FLOW_CONTROL_NONE);
     dce->store_profile(dce);
-    /* Print Module ID, Operator, IMEI, IMSI */
+    // Print Module ID, Operator, IMEI, IMSI
     ESP_LOGI(TAG, "Module: %s", dce->name);
     ESP_LOGI(TAG, "Operator: %s", dce->oper);
     ESP_LOGI(TAG, "IMEI: %s", dce->imei);
     ESP_LOGI(TAG, "IMSI: %s", dce->imsi);
 
-    /* Get signal quality */
+    // Get signal quality 
     uint32_t rssi = 0, ber = 0;
     ESP_ERROR_CHECK(dce->get_signal_quality(dce, &rssi, &ber));
     ESP_LOGI(TAG, "rssi: %d, ber: %d", rssi, ber);
 
-    /* Get battery voltage 
+    // Get battery voltage 
     uint32_t voltage = 0, bcs = 0, bcl = 0;
     ESP_ERROR_CHECK(dce->get_battery_status(dce, &bcs, &bcl, &voltage));
-    ESP_LOGI(TAG, "Battery voltage: %d mV", voltage); */
+    ESP_LOGI(TAG, "Battery voltage: %d mV", voltage);
 
-    /* Setup PPP environment */
+    // Setup PPP environment 
     esp_ppp_config_t pppConfig = {
         .apn_name = "",
         .ppp_auth_username = "",
@@ -49,14 +49,13 @@ void app_main() {
 
     vTaskDelay(pdMS_TO_TICKS(100000));
 
-    /* Power down module */
+    //Power down module
     ESP_ERROR_CHECK(dce->power_down(dce));
     ESP_LOGI(TAG, "Power down");
     ESP_ERROR_CHECK(dce->deinit(dce));
     ESP_ERROR_CHECK(dte->deinit(dte));
 }
-
-
+*/
 void modem_event(void* event_handler_arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
     switch (event_id) {
         case MODEM_EVENT_PPP_START:

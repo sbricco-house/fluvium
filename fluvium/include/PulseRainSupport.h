@@ -1,3 +1,5 @@
+#pragma once
+
 #include "RainGauge.h"
 #include <driver/gpio.h>
 #include "freertos/FreeRTOS.h"
@@ -11,7 +13,6 @@ namespace support {
     class PulseRain : public device::RainGauge {
         #define BOUNDING_THR 300
         private:
-            
             portMUX_TYPE mutex;
             metric::millimeter rainQuantity;
             timeutils::millisecond lastSensed;
