@@ -10,7 +10,6 @@
 #include "TemperatureSensor.h"
 #include "Location.h"
 #include "GpsNmeaSupport.h"
-
 using namespace buffering;
 using namespace buffering::data;
 

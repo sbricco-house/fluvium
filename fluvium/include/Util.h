@@ -61,4 +61,15 @@ namespace gpsutils {
         double minutes = degreesMinutes - (degree * 100);
         return degreesMinutesToDegree(degree, minutes);
     }
+
+    static inline timeutils::millisecond dateTimeToTimestamp(gps_date_t date, gps_time_t time) {
+        struct tm t;
+        t.tm_year = date.year - 1900;
+        t.tm_mon = date.month - 1;
+        t.tm_mday = date.day;
+        t.tm_hour = time.hour;
+        t.tm_min = time.minute;
+        t.tm_sec = time.second;
+        return mktime(&t) * 1000 /* second to millisecond */;
+    }
 };

@@ -8,12 +8,14 @@ namespace buffering {
     #define gpsType 2
     namespace data {
         struct LocationData : public Data {
+            long fixTimestamp;
             double latitude;
             double longitude;
             double altitude;
             float hdop;
-            LocationData(double latitude, double longitude, double altitude, float hdop) :
+            LocationData(long fixTimestamp, double latitude, double longitude, double altitude, float hdop) :
                 Data(gpsType),
+                fixTimestamp(fixTimestamp),
                 latitude(latitude),
                 longitude(longitude),
                 altitude(altitude),
@@ -24,7 +26,7 @@ namespace buffering {
     namespace parser {
         class LocationParser : public Parser {
             private:
-                static const short SERIALIZE_BUFFER = 60;
+                static const short SERIALIZE_BUFFER = 80;
                 short decimalPrecision;
             public:
                 LocationParser(short decimalPrecision = 6) : Parser(gpsType) {};
@@ -33,8 +35,9 @@ namespace buffering {
                     if(data.id != gpsType) return "";
                     char buff[SERIALIZE_BUFFER];
                     data::LocationData* location = (data::LocationData*) &data;
-                    sprintf(buff, "%ld;%.7lf;%.7lf;%.7lf;%.3f",
+                    sprintf(buff, "%ld;%ld;%.7lf;%.7lf;%.7lf;%.3f",
                                     location->timestap,
+                                    location->fixTimestamp,
                                     location->latitude,
                                     location->longitude,
                                     location->altitude,
@@ -85,7 +88,8 @@ namespace task {
                 }
                 gps.deinit();
 
-                printf("Latitude: %lf\nLongitude: %lf\nAltitude: %lf\nHDop: %lf\n",
+                printf("Fix time: %ld\nLatitude: %lf\nLongitude: %lf\nAltitude: %lf\nHDop: %lf\n",
+                    currentBest->fixTimestamp,
                     currentBest->latitude,
                     currentBest->longitude,
                     currentBest->altitude,
@@ -96,6 +100,7 @@ namespace task {
         private:
             static LocationData* locationDataFromNmea(gps_t gps) {
                 return new LocationData {
+                    (long) gpsutils::dateTimeToTimestamp(gps.date, gps.tim),
                     gps.latitude,
                     gps.longitude,
                     gps.altitude,
