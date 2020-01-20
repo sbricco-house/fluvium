@@ -29,17 +29,31 @@ const adc_bits_width_t SOIL_PRECISION = ADC_WIDTH_BIT_9;
 const metric::millimeter DELTA_QUANTITY = 0.08;
 const int SAMPLING_COUNT = 10;
 
-const Buffer buffer(10);
+const Buffer buffer(100);
 
 extern "C" void app_main(void);
 
 //TODO create task that consume and send using gsm.
 static void task_read(void* arg) {
+    using namespace parser;
     Buffer* buffer = (Buffer*) arg;
-    parser::LocationParser parser;
+    Parser* parsers[] = {new WaterLevelParser, 
+                        new GroundDataParser, 
+                        new LocationParser,
+                        nullptr
+                        };
     while(1) {
-        auto data = buffer->dequeue();
-        printf("Data: %s\n", parser.serialize(*data).c_str());
+        do {
+            auto data = buffer->dequeue();
+            for(int i = 0; parsers[i] != nullptr; i++) {
+                auto parsed = (parsers[i])->serialize(*data);
+                if(parsed != "") {
+                    printf("Data: %s\n", parsed.c_str());
+                }
+            }
+            delete(data);
+        } while(!buffer->isEmpty());
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
     vTaskDelete(NULL);
 }
@@ -57,8 +71,9 @@ void app_main(void) {
     task::WaterLevelTask waterLevelTask(buffer, sonar, ds18b20, SAMPLING_COUNT);
     task::LocationTask locationTask(buffer, gps);
     task::GroundStationTask groundStationTask(buffer, soilMoisture, rainGauge, SAMPLING_COUNT);
-    task::Task::deployEsp32(waterLevelTask, 5000, 768, "water_level");
-    task::Task::deployEsp32(groundStationTask, 5000, 768, "groud_station");
+    task::Task::deployEsp32(waterLevelTask, 500, 1024, "water_level");
+    task::Task::deployEsp32(groundStationTask, 500, 1024, "groud_station");
+    task::Task::deployEsp32(locationTask, 500, 4096, "gps");
     xTaskCreate(task_read, "task-read", 2048, (void*)&buffer, 5, NULL);
     vTaskDelay(portMAX_DELAY);
 }

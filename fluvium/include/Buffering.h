@@ -39,7 +39,9 @@ namespace buffering {
             }
 
             bool isEmpty() const {
-                return false; 
+                Data* data = nullptr;
+                xQueuePeek(xQueue, &data, 0);
+                return data == nullptr; 
             }
     };
 
