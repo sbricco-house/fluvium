@@ -2,11 +2,15 @@
  *
  * Automatically generated file; DO NOT EDIT.
  * Espressif IoT Development Framework Configuration
- *
+ * 
  */
 
 #define CONFIG_NMEA_STATEMENT_GGA 1
 #define CONFIG_NMEA_STATEMENT_RMC 1
+
+#define CONFIG_PPP_SUPPORT 1
+#define CONFIG_PPP_NOTIFY_PHASE_SUPPORT 1
+#define CONFIG_PPP_PAP_SUPPORT 1
 
 #define CONFIG_ENABLE_ARDUINO_DEPENDS 1
 #define CONFIG_AUTOSTART_ARDUINO 1

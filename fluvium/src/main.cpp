@@ -32,9 +32,10 @@ static void task_read(void* arg) {
     vTaskDelete(NULL);
 }
 
+/*
 void app_main(void) {
     support::GpsNmea gps(GPS_SERIAL, GPS_PIN);
     task::LocationTask task(buffer, gps);
     xTaskCreate(task_read, "task-read", 2048, (void*)&buffer, 5, NULL);
     task.run();
-}
+} */
