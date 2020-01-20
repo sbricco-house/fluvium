@@ -1,0 +1,63 @@
+#pragma once
+
+#include "SoilMoistureSensor.h"
+#include <driver/gpio.h>
+#include <driver/adc.h>
+
+using namespace device;
+
+namespace support {
+    class SoilMoistureSupport : public SoilMoistureSensor {
+        private:
+            static const double MAX_INPUT_VOLTAGE = 2.2;
+            static const adc_atten_t ATTENUATION = ADC_ATTEN_DB_6; // max input 2.2v
+            static const short MIN_SOIL_MOISTURE = 0;
+            static const short MAX_SOIL_MOISTURE = 100;
+            const gpio_num_t powerPin;
+            const adc1_channel_t channel;
+            const adc_bits_width_t precision;
+
+        public:
+            SoilMoistureSupport(gpio_num_t powerPin, adc1_channel_t channel, adc_bits_width_t precision) : 
+                powerPin(powerPin), channel(channel), precision(precision) {};
+
+            void init() override {
+                gpio_reset_pin(powerPin);
+                //set pin direction
+                gpio_set_direction(powerPin, GPIO_MODE_OUTPUT);
+                // set precision and channel for ADC
+                adc1_config_width(precision);
+                adc1_config_channel_atten(channel, ATTENUATION);
+            };
+
+            metric::relativehumidity senseSoilMoisture() override {
+                // turn high power pin
+                gpio_set_level(powerPin, HIGH);
+                int value = adc1_get_raw(channel);
+                auto soilMoisture = mapRange(value, 
+                    0, precisionToMaxReadableValue(precision), 
+                    MIN_SOIL_MOISTURE, MAX_SOIL_MOISTURE);
+                gpio_set_level(powerPin, LOW);
+                return soilMoisture;
+            }
+        
+        private:
+            static double mapRange(double x, double inMin, double inMax, double outMin, double outMax) {
+                return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+            }
+            static int precisionToMaxReadableValue(adc_bits_width_t width) {
+                switch(width) {
+                    case ADC_WIDTH_9Bit:
+                        return 512;
+                    case ADC_WIDTH_10Bit:
+                        return 1024;
+                    case ADC_WIDTH_11Bit:
+                        return 2048;
+                    case ADC_WIDTH_12Bit:
+                        return 4096;
+                    default:
+                        return -1;
+                }
+            }
+    };
+}

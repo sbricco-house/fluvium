@@ -6,4 +6,5 @@
 namespace metric {
     using meter = double;
     using celsius = float;
+    using relativehumidity = float;
 }
