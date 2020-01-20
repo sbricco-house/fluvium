@@ -8,7 +8,7 @@
 
 namespace timeutils {
     using microsecond = long long;
-    using millisecond = uint_fast32_t;
+    using millisecond = uint64_t;
     using second = double;
 
     static inline second usToS(microsecond us) {
@@ -64,12 +64,12 @@ namespace gpsutils {
 
     static inline timeutils::millisecond dateTimeToTimestamp(gps_date_t date, gps_time_t time) {
         struct tm t;
-        t.tm_year = date.year - 1900;
+        t.tm_year = (2000 + date.year) - 1900;
         t.tm_mon = date.month - 1;
         t.tm_mday = date.day;
         t.tm_hour = time.hour;
         t.tm_min = time.minute;
         t.tm_sec = time.second;
-        return mktime(&t) * 1000 /* second to millisecond */;
+        return ((uint64_t) mktime(&t)) * 1000;
     }
 };

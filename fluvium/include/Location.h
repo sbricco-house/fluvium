@@ -8,12 +8,12 @@ namespace buffering {
     #define gpsType 2
     namespace data {
         struct LocationData : public Data {
-            long fixTimestamp;
+            long long unsigned fixTimestamp;
             double latitude;
             double longitude;
             double altitude;
             float hdop;
-            LocationData(long fixTimestamp, double latitude, double longitude, double altitude, float hdop) :
+            LocationData(long long unsigned fixTimestamp, double latitude, double longitude, double altitude, float hdop) :
                 Data(gpsType),
                 fixTimestamp(fixTimestamp),
                 latitude(latitude),
@@ -35,7 +35,7 @@ namespace buffering {
                     if(data.id != gpsType) return "";
                     char buff[SERIALIZE_BUFFER];
                     data::LocationData* location = (data::LocationData*) &data;
-                    sprintf(buff, "%ld;%ld;%.7lf;%.7lf;%.7lf;%.3f",
+                    sprintf(buff, "%ld;%llu;%.6lf;%.6lf;%.6lf;%.3f",
                                     location->timestap,
                                     location->fixTimestamp,
                                     location->latitude,
@@ -88,7 +88,7 @@ namespace task {
                 }
                 gps.deinit();
 
-                printf("Fix time: %ld\nLatitude: %lf\nLongitude: %lf\nAltitude: %lf\nHDop: %lf\n",
+                printf("Fix time: %llu\nLatitude: %lf\nLongitude: %lf\nAltitude: %lf\nHDop: %lf\n",
                     currentBest->fixTimestamp,
                     currentBest->latitude,
                     currentBest->longitude,
@@ -99,8 +99,9 @@ namespace task {
             };
         private:
             static LocationData* locationDataFromNmea(gps_t gps) {
+                //printf("Time: %ld\n", gpsutils::dateTimeToTimestamp(gps.date, gps.tim));
                 return new LocationData {
-                    (long) gpsutils::dateTimeToTimestamp(gps.date, gps.tim),
+                    gpsutils::dateTimeToTimestamp(gps.date, gps.tim),
                     gps.latitude,
                     gps.longitude,
                     gps.altitude,

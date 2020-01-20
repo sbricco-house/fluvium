@@ -36,7 +36,7 @@ extern "C" void app_main(void);
 //TODO create task that consume and send using gsm.
 static void task_read(void* arg) {
     Buffer* buffer = (Buffer*) arg;
-    parser::WaterLevelParser parser;
+    parser::LocationParser parser;
     while(1) {
         auto data = buffer->dequeue();
         printf("Data: %s\n", parser.serialize(*data).c_str());

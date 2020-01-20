@@ -54,8 +54,8 @@ void app_main() {
     ESP_LOGI(TAG, "Power down");
     ESP_ERROR_CHECK(dce->deinit(dce));
     ESP_ERROR_CHECK(dte->deinit(dte));
-}
-*/
+} */
+
 void modem_event(void* event_handler_arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
     switch (event_id) {
         case MODEM_EVENT_PPP_START:
