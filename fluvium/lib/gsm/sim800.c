@@ -465,6 +465,7 @@ modem_dce_t *sim800_init(modem_dte_t *dte)
     /* Get IMEI number */
     DCE_CHECK(sim800_get_imei_number(sim800_dce) == ESP_OK, "get imei failed", err_io);
     /* Get IMSI number */
+    // TODO: remove comment for check if sim is present
     DCE_CHECK(sim800_get_imsi_number(sim800_dce) == ESP_OK, "get imsi failed", err_io);
     /* Get operator name */
     DCE_CHECK(sim800_get_operator_name(sim800_dce) == ESP_OK, "get operator name failed", err_io);

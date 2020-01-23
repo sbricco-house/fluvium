@@ -26,10 +26,10 @@
 #include "sdkconfig.h"
 
 #define CONFIG_UART_EVENT_TASK_STACK_SIZE 2048
-#define CONFIG_UART_RX_BUFFER_SIZE 512
-#define CONFIG_UART_TX_BUFFER_SIZE 1024
+#define CONFIG_UART_RX_BUFFER_SIZE 1024
+#define CONFIG_UART_TX_BUFFER_SIZE 512
 #define CONFIG_UART_EVENT_TASK_PRIORITY 5
-#define CONFIG_UART_EVENT_QUEUE_SIZE 20
+#define CONFIG_UART_EVENT_QUEUE_SIZE 30
 #define CONFIG_UART_PATTERN_QUEUE_SIZE 20
 
 #define ESP_MODEM_LINE_BUFFER_SIZE (CONFIG_UART_RX_BUFFER_SIZE / 2)
@@ -142,8 +142,9 @@ static void esp_handle_uart_data(esp_modem_dte_t *esp_dte)
     uart_get_buffered_data_len(esp_dte->uart_port, &length);
     length = MIN(ESP_MODEM_LINE_BUFFER_SIZE, length);
     length = uart_read_bytes(esp_dte->uart_port, esp_dte->buffer, length, portMAX_DELAY);
+    printf("Received UART data of length: %d\n", length);
     /* pass input data to the lwIP core thread */
-    if (length) {
+    if (length && esp_dte->ppp != NULL) {
         pppos_input_tcpip(esp_dte->ppp, esp_dte->buffer, length);
     }
 }
@@ -161,6 +162,7 @@ static void uart_event_task_entry(void *param)
         if (xQueueReceive(esp_dte->event_queue, &event, pdMS_TO_TICKS(100))) {
             switch (event.type) {
             case UART_DATA:
+                ESP_LOGW(MODEM_TAG, "Uart data");
                 esp_handle_uart_data(esp_dte);
                 break;
             case UART_FIFO_OVF:
@@ -399,7 +401,9 @@ modem_dte_t *esp_modem_dte_init(const esp_modem_dte_config_t *config)
                               CONFIG_UART_EVENT_QUEUE_SIZE, &(esp_dte->event_queue), 0);
     MODEM_CHECK(res == ESP_OK, "install uart driver failed", err_uart_config);
     /* Set pattern interrupt, used to detect the end of a line. */
-    res = uart_enable_pattern_det_intr(esp_dte->uart_port, '\n', 1, MIN_PATTERN_INTERVAL, MIN_POST_IDLE, MIN_PRE_IDLE);
+    // TODO: check the parameters
+    // res = uart_enable_pattern_det_intr(esp_dte->uart_port, '\n', 1, MIN_PATTERN_INTERVAL, MIN_POST_IDLE, MIN_PRE_IDLE);
+    res = uart_enable_pattern_det_intr(esp_dte->uart_port, '\n', 1, 9, 0, 0);
     /* Set pattern queue size */
     res |= uart_pattern_queue_reset(esp_dte->uart_port, CONFIG_UART_PATTERN_QUEUE_SIZE);
     MODEM_CHECK(res == ESP_OK, "config uart pattern failed", err_uart_pattern);
@@ -460,6 +464,7 @@ esp_err_t esp_modem_remove_event_handler(modem_dte_t *dte, esp_event_handler_t h
  */
 static void on_ppp_status_changed(ppp_pcb *pcb, int err_code, void *ctx)
 {
+    printf("PPP status change: %d\n", err_code);
     struct netif *pppif = ppp_netif(pcb);
     modem_dte_t *dte = (modem_dte_t *)(ctx);
     esp_modem_dte_t *esp_dte = __containerof(dte, esp_modem_dte_t, parent);

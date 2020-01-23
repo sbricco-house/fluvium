@@ -61,7 +61,7 @@ static void task_read(void* arg) {
     }
     vTaskDelete(NULL);
 }
-
+/*
 void app_main(void) {
     //SETUP POWER MANAGEMENT
     //SETUP TIMESTAP TODO!
@@ -81,4 +81,4 @@ void app_main(void) {
     //task::Task::deployEsp32(locationTask, 500, 4096, "gps");
     xTaskCreate(task_read, "consumer", 4096, (void *) &buffer, 5, NULL);
     vTaskDelay(portMAX_DELAY);
-}
+}*/
