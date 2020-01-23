@@ -14,15 +14,15 @@ namespace device {
             /**
              * return the rain quantity sensed by rain gauge.
              */
-            virtual metric::millimeter getRainQuantity();
+            virtual metric::millimeter getRainQuantity() = 0;
             /**
              * reset internal rain quantity sensed by the device.
              */
-            virtual void reset();
+            virtual void reset() = 0;
             /**
              * return the rain qauntity sensed by rain gauge and reset the quantity.
              * this method do this action in atomical way.
              */
-            virtual metric::millimeter getAndResetQuantity();
+            virtual metric::millimeter getAndResetQuantity() = 0;
     };
 }

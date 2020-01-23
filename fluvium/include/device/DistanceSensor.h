@@ -8,6 +8,6 @@ namespace device
      */
     class DistanceSensor : public Device {
         public:
-            virtual metric::meter senseDistance(metric::celsius temperature);
+            virtual metric::meter senseDistance(metric::celsius temperature) = 0;
     };
 }

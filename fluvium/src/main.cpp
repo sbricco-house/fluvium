@@ -1,18 +1,19 @@
 #include <stdio.h>
+#include <aws_iot_shadow_interface.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "string.h"
 #include "esp_system.h"
 #include "nvs_flash.h"
-#include "DS18B20Support.h"
-#include "SonarSupport.h"
-#include "WaterLevel.h"
-#include "PulseRainSupport.h"
-#include "TemperatureSensor.h"
-#include "Location.h"
-#include "GpsNmeaSupport.h"
-#include "GroundStation.h"
-#include "SoilMoistureSupport.h"
+#include "support/DS18B20Support.h"
+#include "support/SonarSupport.h"
+#include "task/WaterLevel.h"
+#include "support/PulseRainSupport.h"
+#include "device/TemperatureSensor.h"
+#include "task/Location.h"
+#include "support/GpsNmeaSupport.h"
+#include "task/GroundStation.h"
+#include "support/SoilMoistureSupport.h"
 
 using namespace buffering;
 using namespace buffering::data;
@@ -33,15 +34,18 @@ const Buffer buffer(100);
 
 extern "C" void app_main(void);
 
+   
 //TODO create task that consume and send using gsm.
+
 static void task_read(void* arg) {
     using namespace parser;
     Buffer* buffer = (Buffer*) arg;
-    Parser* parsers[] = {new WaterLevelParser, 
-                        new GroundDataParser, 
-                        new LocationParser,
+    Parser* parsers[] = {new WaterLevelParser(), 
+                        new GroundDataParser(), 
+                        //new LocationParser(),
                         nullptr
                         };
+
     while(1) {
         do {
             auto data = buffer->dequeue();
@@ -62,18 +66,19 @@ void app_main(void) {
     //SETUP POWER MANAGEMENT
     //SETUP TIMESTAP TODO!
     //SENSORS CREATION
-    support::GpsNmea gps(GPS_SERIAL, GPS_PIN);
+    //support::GpsNmea gps(GPS_SERIAL, GPS_PIN);
     support::DS18B20 ds18b20(GPIO_NUM_5, support::P9);
     support::Sonar sonar(TRIG_PIN, ECHO_PIN);
     support::PulseRain rainGauge(REED_SWITCH_PIN, DELTA_QUANTITY);
     support::SparkFunMoisture soilMoisture(SOIL_PIN, SOIL_INPUT_PIN, SOIL_PRECISION);
     //TASKs CREATION
     task::WaterLevelTask waterLevelTask(buffer, sonar, ds18b20, SAMPLING_COUNT);
-    task::LocationTask locationTask(buffer, gps);
+    //task::LocationTask locationTask(buffer, gps);
     task::GroundStationTask groundStationTask(buffer, soilMoisture, rainGauge, SAMPLING_COUNT);
     task::Task::deployEsp32(waterLevelTask, 500, 1024, "water_level");
-    task::Task::deployEsp32(groundStationTask, 500, 1024, "groud_station");
-    task::Task::deployEsp32(locationTask, 500, 4096, "gps");
-    xTaskCreate(task_read, "task-read", 2048, (void*)&buffer, 5, NULL);
+    task::Task::deployEsp32(groundStationTask, 500, 2024, "ground_station");
+
+    //task::Task::deployEsp32(locationTask, 500, 4096, "gps");
+    xTaskCreate(task_read, "consumer", 4096, (void *) &buffer, 5, NULL);
     vTaskDelay(portMAX_DELAY);
 }

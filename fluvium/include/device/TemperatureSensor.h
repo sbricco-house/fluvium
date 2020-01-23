@@ -4,6 +4,6 @@
 namespace device {
     class TemperatureSensor : public Device {
         public:
-            virtual metric::celsius senseTemperature();
+            virtual metric::celsius senseTemperature() = 0;
     }; 
 }

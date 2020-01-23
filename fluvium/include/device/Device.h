@@ -18,6 +18,6 @@ namespace device {
             * Initialize device internal (low level, hardware thing..) state. It is different from object construction.
             * In some case, init method can be called more times.
             */
-            virtual void init();
+            virtual void init() = 0;
     };
 }

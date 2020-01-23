@@ -2,6 +2,8 @@
 
 #include <sys/time.h>
 #include <time.h>
+#include <str.h>
+#include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <cmath>
 #include "nmea_parser.h"
@@ -49,6 +51,10 @@ namespace stringutils {
             return c - 'a' + 10;
         return -1;
     };
+
+    static inline bool isEmpty(char * word) {
+        return strcmp(word, "")  == 0;
+    }
 };
 
 namespace gpsutils {
