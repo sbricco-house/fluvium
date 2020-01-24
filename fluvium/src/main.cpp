@@ -15,6 +15,9 @@
 //CONNECTION INCLUDE
 #include "network/FakeNetwork.h"
 #include "middleware/FakeMiddleware.h"
+#include "network/Wifi.h"
+#include "middleware/AwsCoreService.h"
+#include "middleware/AwsCertificate.h"
 //TASK INCLUDE
 #include "task/WaterLevel.h"
 #include "task/Location.h"
@@ -48,8 +51,20 @@ void app_main(void) {
     task::ParserSet parserSet { parsers, 3 };
     //SETUP POWER MANAGEMENT ! TODO
     //SETUP CONNECTION
-    network::FakeNetwork net;
-    middleware::FakeMiddleware middleware;
+    //network::FakeNetwork net;
+    //middleware::FakeMiddleware middleware;
+    network::Wifi net("DELL", "12345678");
+    middleware::AwsPrivacyConfig privacySetting(
+        (const char *)certificate_pem_crt_start,
+        (const char *)private_pem_key_start,
+        (const char *)aws_root_ca_pem_start
+    );
+    middleware::MqttConfig mqttConfig(
+        "a1l0qetj8lwb0i-ats.iot.us-east-2.amazonaws.com",
+         AWS_IOT_MQTT_PORT
+    );
+    middleware::AwsIotCoreConfig iotConfig { 1 };
+    middleware::AwsCoreService middleware("waterlevel:cesena:1", privacySetting, mqttConfig, iotConfig);
     //SETUP TIMESTAP TODO!
     //SENSORS CREATION
     //support::GpsNmea gps(GPS_SERIAL, GPS_PIN);
@@ -63,7 +78,7 @@ void app_main(void) {
     task::Consumer consumer(buffer, middleware, net, parserSet);
     task::GroundStationTask groundStationTask(buffer, soilMoisture, rainGauge, SAMPLING_COUNT);
     task::Task::deployEsp32(waterLevelTask, 1000, 1024, "water_level");
-    task::Task::deployEsp32(groundStationTask, 1000, 2024, "ground_station");
+    //task::Task::deployEsp32(groundStationTask, 1000, 2024, "ground_station");
     task::Task::deployEsp32(consumer, 5000, 9012, "consumer");
     //task::Task::deployEsp32(locationTask, 500, 4096, "gps");
     vTaskDelay(portMAX_DELAY);

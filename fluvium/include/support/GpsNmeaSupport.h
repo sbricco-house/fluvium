@@ -16,7 +16,6 @@ namespace support {
             nmea_parser_handle_t nmeaHandler;
             gps_t lastKnownLocation;
             EventGroupHandle_t eventGroup;        
-
         public:
             GpsNmea(uart_port_t uartPort, gpio_num_t rxPin);
             void init() override;

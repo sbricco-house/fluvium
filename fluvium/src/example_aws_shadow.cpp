@@ -268,7 +268,7 @@ static void initialise_wifi(void)
     ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
     ESP_ERROR_CHECK( esp_wifi_start() );
 }
-
+/*
 void app_main()
 {
     int value = 100;
@@ -297,6 +297,5 @@ void app_main()
     ESP_ERROR_CHECK( err );
 
     initialise_wifi();
-    /* Temporarily pin task to core, due to FPU uncertainty */
     xTaskCreatePinnedToCore(&aws_iot_task, "aws_iot_task", 12000, NULL, 5, NULL, 1);
-}
+}*/

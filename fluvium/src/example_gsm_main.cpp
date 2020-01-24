@@ -9,7 +9,7 @@
 
 #define TAG "Main"
 
-extern "C" void app_main();
+//extern "C" void app_main();
 void testSocketGoogle();
 
 void app_main() {

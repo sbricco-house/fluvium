@@ -1,9 +1,5 @@
 #pragma once
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_system.h"
 #include "driver/gpio.h"
-#include "rom/ets_sys.h"
 #include "device/Device.h"
 #include "Metric.h"
 #include "device/TemperatureSensor.h"

@@ -51,6 +51,7 @@ ConnectionResult AwsCoreService::reconnect() {
 
 
 PublishResult AwsCoreService::publish(char * payload) {
+    ESP_LOGI("aws_shadow", "publishing.. : %s", payload);
     auto error = aws_iot_shadow_update(&mqttClient, deviceName, payload, NO_CALLBACK, NO_CONTEXT_DATA, config.maxTimeuot, false); //false because we don't need the update of device
     return error != SUCCESS ? PUBLISH_ERROR : PUBLISHED;
 }

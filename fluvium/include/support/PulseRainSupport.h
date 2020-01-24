@@ -6,7 +6,6 @@
 #include "Util.h"
 #include "esp_types.h"
 #include "esp_event.h"
-#include "esp_err.h"
 namespace support {
     //TODO create a support to manage interrupts
     #define ESP_INTR_FLAG_DEFAULT 0

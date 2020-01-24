@@ -38,7 +38,7 @@ bool Gsm::connect() {
         CONNECT_BIT,
         pdTRUE,
         pdTRUE,
-        pdMS_TO_TICKS(CONNECTION_TIMEOUT_MS)) & CONNECT_BIT != CONNECT_BIT;
+        pdMS_TO_TICKS(CONNECTION_TIMEOUT_MS)) && CONNECT_BIT != CONNECT_BIT;
 
     return !timeout & (state == CONNECTED);   
 }
@@ -56,6 +56,7 @@ bool Gsm::disconnect() {
 
 bool Gsm::standby() {
     ESP_LOGI(TAG, "TODO: standby not implemented\n");
+    return true;
 }
 
 bool Gsm::initModem() {
