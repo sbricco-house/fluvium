@@ -33,7 +33,7 @@ bool Buffer::isEmpty() const {
 //BASE PARSER IMPLEMENTATION
 
 #define MAX_FINALIZATION_LEN 50
-Parser::Parser(data_type parsingType) : parsingType(parsingType) {};
+Parser::Parser(data_type parsingType) : parsingType(parsingType) {}
 
 json Parser::serialize(const Data& data) {
     if(data.id == parsingType) {

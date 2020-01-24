@@ -8,14 +8,10 @@ using namespace parser;
 #define GPS_DATA_SIZE 512
 #define INNER_JSON_OBJECT 450
 //GPS PARSER IMPLEMENTATION
-LocationParser::LocationParser(short decimalPrecision) : Parser(gpsType), decimalPrecision(decimalPrecision) {};
 //LocationParser::LocationParser(short decimalPrecision) : Parser(gpsType), decimalPrecision(decimalPrecision) {};
+LocationParser::LocationParser(short decimalPrecision) : Parser(gpsType), decimalPrecision(decimalPrecision) {};
 
-json doSerialize(const Data& data) {
-    return "";
-}
-
-/*json doSerialize(const Data& data) {
+json LocationParser::doSerialize(const Data& data) {
     char payload[GPS_DATA_SIZE];
     char innerJson[INNER_JSON_OBJECT];
     auto location = (data::LocationData*) &data;
@@ -34,7 +30,7 @@ json doSerialize(const Data& data) {
     aws_iot_finalize_json_document(payload, GPS_DATA_SIZE);
     return std::string(payload);
 };
-*/
+
 //LOCATION TASK IMPLEMENTATION
 LocationTask::LocationTask(const Buffer& buffer, device::Gps& gps) : Task(buffer), gps(gps){};
 

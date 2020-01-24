@@ -1,3 +1,4 @@
+//SYSTEM INCLUDES
 #include <stdio.h>
 #include <aws_iot_shadow_interface.h>
 #include "freertos/FreeRTOS.h"
@@ -5,15 +6,20 @@
 #include "string.h"
 #include "esp_system.h"
 #include "nvs_flash.h"
+//SUPPORT INCLUDE
 #include "support/DS18B20Support.h"
 #include "support/SonarSupport.h"
-#include "task/WaterLevel.h"
 #include "support/PulseRainSupport.h"
-#include "device/TemperatureSensor.h"
-#include "task/Location.h"
 #include "support/GpsNmeaSupport.h"
-#include "task/GroundStation.h"
 #include "support/SoilMoistureSupport.h"
+//CONNECTION INCLUDE
+#include "network/FakeNetwork.h"
+#include "middleware/FakeMiddleware.h"
+//TASK INCLUDE
+#include "task/WaterLevel.h"
+#include "task/Location.h"
+#include "task/GroundStation.h"
+#include "task/Consumer.h"
 
 using namespace buffering;
 using namespace buffering::data;
@@ -34,36 +40,16 @@ const Buffer buffer(100);
 
 extern "C" void app_main(void);
 
-   
-//TODO create task that consume and send using gsm.
-
-static void task_read(void* arg) {
-    using namespace parser;
-    Buffer* buffer = (Buffer*) arg;
-    Parser* parsers[] = {new WaterLevelParser(), 
-                        new GroundDataParser(), 
-                        //new LocationParser(),
-                        nullptr
-                        };
-
-    while(1) {
-        do {
-            auto data = buffer->dequeue();
-            for(int i = 0; parsers[i] != nullptr; i++) {
-                auto parsed = (parsers[i])->serialize(*data);
-                if(parsed != "") {
-                    printf("Data: %s\n", parsed.c_str());
-                }
-            }
-            delete(data);
-        } while(!buffer->isEmpty());
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-    vTaskDelete(NULL);
-}
-/*
 void app_main(void) {
-    //SETUP POWER MANAGEMENT
+    parser::WaterLevelParser* waterLevelParser = new parser::WaterLevelParser();
+    parser::GroundDataParser* groundDataParser = new parser::GroundDataParser();
+    parser::LocationParser* locationParser = new parser::LocationParser();
+    Parser* parsers[] { waterLevelParser, groundDataParser, locationParser };
+    task::ParserSet parserSet { parsers, 3 };
+    //SETUP POWER MANAGEMENT ! TODO
+    //SETUP CONNECTION
+    network::FakeNetwork net;
+    middleware::FakeMiddleware middleware;
     //SETUP TIMESTAP TODO!
     //SENSORS CREATION
     //support::GpsNmea gps(GPS_SERIAL, GPS_PIN);
@@ -74,11 +60,11 @@ void app_main(void) {
     //TASKs CREATION
     task::WaterLevelTask waterLevelTask(buffer, sonar, ds18b20, SAMPLING_COUNT);
     //task::LocationTask locationTask(buffer, gps);
+    task::Consumer consumer(buffer, middleware, net, parserSet);
     task::GroundStationTask groundStationTask(buffer, soilMoisture, rainGauge, SAMPLING_COUNT);
-    task::Task::deployEsp32(waterLevelTask, 500, 1024, "water_level");
-    task::Task::deployEsp32(groundStationTask, 500, 2024, "ground_station");
-
+    task::Task::deployEsp32(waterLevelTask, 1000, 1024, "water_level");
+    task::Task::deployEsp32(groundStationTask, 1000, 2024, "ground_station");
+    task::Task::deployEsp32(consumer, 5000, 9012, "consumer");
     //task::Task::deployEsp32(locationTask, 500, 4096, "gps");
-    xTaskCreate(task_read, "consumer", 4096, (void *) &buffer, 5, NULL);
     vTaskDelay(portMAX_DELAY);
-}*/
+}
