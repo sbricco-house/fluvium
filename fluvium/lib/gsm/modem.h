@@ -1,24 +1,11 @@
-// Copyright 2015-2018 Espressif Systems (Shanghai) PTE LTD
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 #pragma once
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "esp_modem_dce.h"
-#include "esp_modem_dte.h"
+#include "modem_dce.h"
+#include "modem_dte.h"
 #include "esp_event.h"
 #include "driver/uart.h"
 
@@ -27,7 +14,6 @@ extern "C" {
  *
  */
 ESP_EVENT_DECLARE_BASE(ESP_MODEM_EVENT);
-
 /**
  * @brief ESP Modem Event
  *
@@ -62,6 +48,13 @@ typedef struct {
     const char* ppp_auth_username;
     const char* ppp_auth_password;
 } esp_ppp_config_t;
+
+#define ESP_MODEM_PPP_DEFAULT_CONFIG(apn)       \
+    {                                           \
+        .apn_name = apn,                        \
+        .ppp_auth_username = "",                \
+        .ppp_auth_password = ""                 \
+    }
 
 /**
  * @brief ESP Modem DTE Default Configuration
@@ -126,25 +119,13 @@ typedef struct {
     ip4_addr_t ns2;     /*!< Name Server2 */
 } ppp_client_ip_info_t;
 
-/**
- * @brief Setup PPP Session
- *
- * @param dte Modem DTE object
- * @return esp_err_t
- *      - ESP_OK on success
- *      - ESP_FAIL on error
- */
-esp_err_t esp_modem_setup_ppp(modem_dte_t *dte, esp_ppp_config_t *ppp_config);
+esp_err_t esp_modem_start_ppp(modem_dte_t *dte);
 
-/**
- * @brief Exit PPP Session
- *
- * @param dte Modem DTE Object
- * @return esp_err_t
- *      - ESP_OK on success
- *      - ESP_FAIL on error
- */
-esp_err_t esp_modem_exit_ppp(modem_dte_t *dte);
+esp_err_t esp_modem_connect_ppp(modem_dte_t *dte, esp_ppp_config_t *ppp_config);
+
+esp_err_t esp_modem_disconnect_ppp(modem_dte_t *dte);
+
+esp_err_t esp_modem_stop_ppp(modem_dte_t *dte);
 
 #ifdef __cplusplus
 }

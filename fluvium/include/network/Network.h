@@ -2,6 +2,7 @@
 
 namespace network {
     enum NetworkState {
+        CONNECTING,
         CONNECTED,
         DISCONNECTED,
         STANDBY

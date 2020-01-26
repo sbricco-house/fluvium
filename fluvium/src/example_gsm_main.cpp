@@ -6,35 +6,29 @@
 #include "lwip/sys.h"
 #include <lwip/netdb.h>
 #include "network/Gsm.h"
+#include "network/NetworkFactory.h"
 
 #define TAG "Main"
+#define RECONNECT_ATTEMPS 5
 
 //extern "C" void app_main();
 void testSocketGoogle();
 
 void app_main() {
-    esp_modem_dte_config_t config = ESP_MODEM_DTE_DEFAULT_CONFIG();
-    config.port_num = UART_NUM_2;
-    config.rx_pin = GPIO_NUM_16;
-    config.tx_pin = GPIO_NUM_17;
-
-    esp_ppp_config_t pppConfig = {
-        .apn_name = "internet.wind",
-        .ppp_auth_username = "",
-        .ppp_auth_password = ""
-    };
-
-    network::Gsm gsm(config, pppConfig);
+    
+    auto gsm = networkfactory::createGsmTTGO("iliad");
 
     ESP_LOGI(TAG, "Connecting...\n");
-    gsm.connect(); // blocking connect method
-    ESP_LOGI(TAG, "Connected!\n");
+    bool connected = false;
+    for(int i = 0; i < RECONNECT_ATTEMPS && !connected; i++, connected = gsm.connect()) {}
     
-    testSocketGoogle();
-
-    ESP_LOGI(TAG, "Disconnect...\n");
-    gsm.disconnect();
-    ESP_LOGI(TAG, "Disconnected!\n");
+    if(connected) {
+        testSocketGoogle();
+        bool disconnected = gsm.disconnect();
+        printf("%s\n", disconnected ? "Disconnected" : "Fail to disconnect");
+    } else {
+        printf("Connection failed after %d times\n", RECONNECT_ATTEMPS);
+    }
 }
 
 void testSocketGoogle() {

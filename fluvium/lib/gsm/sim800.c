@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "esp_log.h"
-#include "esp_modem_dce_service.h"
+#include "modem_dce_service.h"
 #include "sim800.h"
 
 #define MODEM_RESULT_CODE_POWERDOWN "POWER DOWN"
@@ -90,6 +90,7 @@ static esp_err_t sim800_handle_cbc(modem_dce_t *dce, const char *line)
  */
 static esp_err_t sim800_handle_exit_data_mode(modem_dce_t *dce, const char *line)
 {
+    printf("Handle exit data: %s\n", line);
     esp_err_t err = ESP_FAIL;
     if (strstr(line, MODEM_RESULT_CODE_SUCCESS)) {
         err = esp_modem_process_command_done(dce, MODEM_STATE_SUCCESS);
@@ -229,57 +230,6 @@ static esp_err_t sim800_handle_power_down(modem_dce_t *dce, const char *line)
 }
 
 /**
- * @brief Get signal quality
- *
- * @param dce Modem DCE object
- * @param rssi received signal strength indication
- * @param ber bit error ratio
- * @return esp_err_t
- *      - ESP_OK on success
- *      - ESP_FAIL on error
- */
-static esp_err_t sim800_get_signal_quality(modem_dce_t *dce, uint32_t *rssi, uint32_t *ber)
-{
-    modem_dte_t *dte = dce->dte;
-    sim800_modem_dce_t *sim800_dce = __containerof(dce, sim800_modem_dce_t, parent);
-    uint32_t *resource[2] = {rssi, ber};
-    sim800_dce->priv_resource = resource;
-    dce->handle_line = sim800_handle_csq;
-    DCE_CHECK(dte->send_cmd(dte, "AT+CSQ\r", MODEM_COMMAND_TIMEOUT_DEFAULT) == ESP_OK, "send command failed", err);
-    DCE_CHECK(dce->state == MODEM_STATE_SUCCESS, "inquire signal quality failed", err);
-    ESP_LOGD(DCE_TAG, "inquire signal quality ok");
-    return ESP_OK;
-err:
-    return ESP_FAIL;
-}
-
-/**
- * @brief Get battery status
- *
- * @param dce Modem DCE object
- * @param bcs Battery charge status
- * @param bcl Battery connection level
- * @param voltage Battery voltage
- * @return esp_err_t
- *      - ESP_OK on success
- *      - ESP_FAIL on error
- */
-static esp_err_t sim800_get_battery_status(modem_dce_t *dce, uint32_t *bcs, uint32_t *bcl, uint32_t *voltage)
-{
-    modem_dte_t *dte = dce->dte;
-    sim800_modem_dce_t *sim800_dce = __containerof(dce, sim800_modem_dce_t, parent);
-    uint32_t *resource[3] = {bcs, bcl, voltage};
-    sim800_dce->priv_resource = resource;
-    dce->handle_line = sim800_handle_cbc;
-    DCE_CHECK(dte->send_cmd(dte, "AT+CBC\r", MODEM_COMMAND_TIMEOUT_DEFAULT) == ESP_OK, "send command failed", err);
-    DCE_CHECK(dce->state == MODEM_STATE_SUCCESS, "inquire battery status failed", err);
-    ESP_LOGD(DCE_TAG, "inquire battery status ok");
-    return ESP_OK;
-err:
-    return ESP_FAIL;
-}
-
-/**
  * @brief Set Working Mode
  *
  * @param dce Modem DCE object
@@ -290,13 +240,14 @@ err:
  */
 static esp_err_t sim800_set_working_mode(modem_dce_t *dce, modem_mode_t mode)
 {
+    printf("Setting working mode\n");
     modem_dte_t *dte = dce->dte;
     switch (mode) {
     case MODEM_COMMAND_MODE:
         dce->handle_line = sim800_handle_exit_data_mode;
-        DCE_CHECK(dte->send_cmd(dte, "+++", MODEM_COMMAND_TIMEOUT_MODE_CHANGE) == ESP_OK, "send command failed", err);
-        DCE_CHECK(dce->state == MODEM_STATE_SUCCESS, "enter command mode failed", err);
-        ESP_LOGD(DCE_TAG, "enter command mode ok");
+        dte->send_cmd_block_tx(dte, "+++", MODEM_COMMAND_TIMEOUT_MODE_CHANGE);
+        //dce->state == MODEM_STATE_SUCCESS;
+        ESP_LOGI(DCE_TAG, "enter command mode ok");
         dce->mode = MODEM_COMMAND_MODE;
         break;
     case MODEM_PPP_MODE:
@@ -446,27 +397,22 @@ modem_dce_t *sim800_init(modem_dte_t *dte)
     /* Bind methods */
     sim800_dce->parent.handle_line = NULL;
     sim800_dce->parent.sync = esp_modem_dce_sync;
-    sim800_dce->parent.echo_mode = esp_modem_dce_echo;
     sim800_dce->parent.store_profile = esp_modem_dce_store_profile;
     sim800_dce->parent.set_flow_ctrl = esp_modem_dce_set_flow_ctrl;
     sim800_dce->parent.define_pdp_context = esp_modem_dce_define_pdp_context;
     sim800_dce->parent.hang_up = esp_modem_dce_hang_up;
-    sim800_dce->parent.get_signal_quality = sim800_get_signal_quality;
-    sim800_dce->parent.get_battery_status = sim800_get_battery_status;
     sim800_dce->parent.set_working_mode = sim800_set_working_mode;
     sim800_dce->parent.power_down = sim800_power_down;
     sim800_dce->parent.deinit = sim800_deinit;
     /* Sync between DTE and DCE */
     DCE_CHECK(esp_modem_dce_sync(&(sim800_dce->parent)) == ESP_OK, "sync failed", err_io);
-    /* Close echo */
-    DCE_CHECK(esp_modem_dce_echo(&(sim800_dce->parent), false) == ESP_OK, "close echo mode failed", err_io);
     /* Get Module name */
     DCE_CHECK(sim800_get_module_name(sim800_dce) == ESP_OK, "get module name failed", err_io);
     /* Get IMEI number */
-    DCE_CHECK(sim800_get_imei_number(sim800_dce) == ESP_OK, "get imei failed", err_io);
+    //DCE_CHECK(sim800_get_imei_number(sim800_dce) == ESP_OK, "get imei failed", err_io);
     /* Get IMSI number */
     // TODO: remove comment for check if sim is present
-    DCE_CHECK(sim800_get_imsi_number(sim800_dce) == ESP_OK, "get imsi failed", err_io);
+    //DCE_CHECK(sim800_get_imsi_number(sim800_dce) == ESP_OK, "get imsi failed", err_io);
     /* Get operator name */
     DCE_CHECK(sim800_get_operator_name(sim800_dce) == ESP_OK, "get operator name failed", err_io);
     return &(sim800_dce->parent);

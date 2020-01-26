@@ -1,23 +1,10 @@
-// Copyright 2015-2018 Espressif Systems (Shanghai) PTE LTD
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 #pragma once
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "esp_modem_dce.h"
+#include "modem_dce.h"
 
 /**
  * @brief Indicate that processing current command has done
@@ -70,17 +57,6 @@ esp_err_t esp_modem_dce_handle_response_default(modem_dce_t *dce, const char *li
  *      - ESP_FAIL on error
  */
 esp_err_t esp_modem_dce_sync(modem_dce_t *dce);
-
-/**
- * @brief Enable or not echo mode of DCE
- *
- * @param dce Modem DCE object
- * @param on true to enable echo mode, false to disable echo mode
- * @return esp_err_t
- *      - ESP_OK on success
- *      - ESP_FAIL on error
- */
-esp_err_t esp_modem_dce_echo(modem_dce_t *dce, bool on);
 
 /**
  * @brief Store current parameter setting in the user profile

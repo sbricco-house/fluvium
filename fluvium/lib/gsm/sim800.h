@@ -17,8 +17,8 @@
 extern "C" {
 #endif
 
-#include "esp_modem_dce_service.h"
-#include "esp_modem.h"
+#include "modem_dce_service.h"
+#include "modem.h"
 
 /**
  * @brief Create and initialize SIM800 object

@@ -51,6 +51,7 @@ struct modem_dte {
     modem_flow_ctrl_t flow_ctrl;                                                    /*!< Flow control of DTE */
     modem_dce_t *dce;                                                               /*!< DCE which connected to the DTE */
     esp_err_t (*send_cmd)(modem_dte_t *dte, const char *command, uint32_t timeout); /*!< Send command to DCE */
+    esp_err_t (*send_cmd_block_tx)(modem_dte_t *dte, const char *command, uint32_t timeout);
     int (*send_data)(modem_dte_t *dte, const char *data, uint32_t length);          /*!< Send data to DCE */
     esp_err_t (*send_wait)(modem_dte_t *dte, const char *data, uint32_t length,
                            const char *prompt, uint32_t timeout);      /*!< Wait for specific prompt */
