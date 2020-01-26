@@ -5,9 +5,6 @@ FakeMiddleware::FakeMiddleware() {}
 ConnectionResult FakeMiddleware::connect() {
     return OK;
 }
-ConnectionResult FakeMiddleware::reconnect() {
-    return OK;
-}
 ConnectionResult FakeMiddleware::disconnect() {
     return OK;
 }

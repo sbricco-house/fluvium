@@ -5,7 +5,6 @@ namespace middleware {
         public:
             FakeMiddleware();
             ConnectionResult connect() override;
-            ConnectionResult reconnect() override;
             ConnectionResult disconnect() override;
             PublishResult publish(char * payload) override;
     };

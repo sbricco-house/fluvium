@@ -1,3 +1,4 @@
+//CONFIG_MAIN_TASK_STACK_SIZE TO INCREASE MAIN TASK SIZE
 //SYSTEM INCLUDES
 #include <stdio.h>
 #include <aws_iot_shadow_interface.h>
@@ -15,9 +16,9 @@
 //CONNECTION INCLUDE
 #include "network/FakeNetwork.h"
 #include "middleware/FakeMiddleware.h"
-#include "network/Wifi.h"
-#include "middleware/AwsCoreService.h"
 #include "middleware/AwsCertificate.h"
+#include "middleware/AwsCoreService.h"
+#include "network/Wifi.h"
 //TASK INCLUDE
 #include "task/WaterLevel.h"
 #include "task/Location.h"
@@ -39,7 +40,7 @@ const adc_bits_width_t SOIL_PRECISION = ADC_WIDTH_BIT_9;
 const metric::millimeter DELTA_QUANTITY = 0.08;
 const int SAMPLING_COUNT = 10;
 
-const Buffer buffer(100);
+const Buffer buffer(5);
 
 extern "C" void app_main(void);
 
@@ -51,16 +52,16 @@ void app_main(void) {
     task::ParserSet parserSet { parsers, 3 };
     //SETUP POWER MANAGEMENT ! TODO
     //SETUP CONNECTION
-    //network::FakeNetwork net;
-    //middleware::FakeMiddleware middleware;
     network::Wifi net("DELL", "12345678");
+    //middleware::FakeMiddleware middleware;
     middleware::AwsPrivacyConfig privacySetting(
         (const char *)certificate_pem_crt_start,
         (const char *)private_pem_key_start,
         (const char *)aws_root_ca_pem_start
     );
+    //printf("%s\n", certificate_pem_crt_start);
     middleware::MqttConfig mqttConfig(
-        "a1l0qetj8lwb0i-ats.iot.us-east-2.amazonaws.com",
+        "a1l0qetj8lwb0i-ats.iot.eu-west-3.amazonaws.com",
          AWS_IOT_MQTT_PORT
     );
     middleware::AwsIotCoreConfig iotConfig { 1 };
@@ -77,9 +78,9 @@ void app_main(void) {
     //task::LocationTask locationTask(buffer, gps);
     task::Consumer consumer(buffer, middleware, net, parserSet);
     task::GroundStationTask groundStationTask(buffer, soilMoisture, rainGauge, SAMPLING_COUNT);
-    task::Task::deployEsp32(waterLevelTask, 1000, 1024, "water_level");
-    //task::Task::deployEsp32(groundStationTask, 1000, 2024, "ground_station");
-    task::Task::deployEsp32(consumer, 5000, 9012, "consumer");
+    task::Task::deployEsp32(waterLevelTask, 30000, 1024, "water_level");
+    task::Task::deployEsp32(groundStationTask, 30000, 2024, "ground_station");
+    task::Task::deployEsp32(consumer, 60000, 9012, "consumer");
     //task::Task::deployEsp32(locationTask, 500, 4096, "gps");
     vTaskDelay(portMAX_DELAY);
 }

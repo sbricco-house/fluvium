@@ -15,7 +15,6 @@ namespace middleware {
     class MiddlewareService {
         public:
             virtual ConnectionResult connect() = 0;
-            virtual ConnectionResult reconnect() = 0;
             virtual PublishResult publish(char * payload) = 0;
             virtual ConnectionResult disconnect() = 0;
     };

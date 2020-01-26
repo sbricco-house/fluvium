@@ -6,11 +6,17 @@ using namespace buffering;
 using namespace middleware;
 using namespace network;
 
+#define LOG_TAG "consumer_task"
 Consumer::Consumer(const Buffer& buffer, MiddlewareService& middleware, Network& net, ParserSet parsers) : Task(buffer), middleware(middleware), net(net), parsers(parsers) {}
 //TODO add controls on data publish
 void Consumer::run() {
     net.connect();
-    middleware.connect();
+    auto error = middleware.connect();
+    if(error != ConnectionResult::OK) {
+        ESP_LOGI(LOG_TAG, "no connection.. turn on sleep..");
+        return;
+    }
+    ESP_LOGI(LOG_TAG, "consumer awaked");
     while(!buffer.isEmpty()) {
         auto data = buffer.dequeue();
         json payload = "";
@@ -20,7 +26,7 @@ void Consumer::run() {
                 auto bufferSize = payload.length() + 1;
                 char payloadBuffer[bufferSize];
                 strcpy(payloadBuffer, payload.c_str());
-                ESP_LOGI("aws_publisher", "publishing = %s", payloadBuffer);
+                ESP_LOGI(LOG_TAG, "publishing = %s", payloadBuffer);
                 middleware.publish(payloadBuffer);
             }
         }

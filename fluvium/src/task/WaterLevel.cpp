@@ -14,7 +14,7 @@ json WaterLevelParser::doSerialize(const Data& data) {
     char innerObject[INNER_OBJECT_SIZE];
     auto waterLevelData = (WaterLevel*) & data;
     sprintf(innerObject, "{\"%s\": %llu, \"%s\": %f}", 
-        "timestap", waterLevelData->timestamp,
+        "timestamp", waterLevelData->timestamp,
         "delta", waterLevelData->level);
 
     jsonStruct_t waterLevelJson {"water_level", innerObject, strlen(innerObject) + 1, SHADOW_JSON_OBJECT, NULL };

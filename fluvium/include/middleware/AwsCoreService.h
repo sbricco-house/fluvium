@@ -30,7 +30,6 @@ namespace middleware {
         public:
             AwsCoreService(char * deviceName, AwsPrivacyConfig privacyConfig, MqttConfig mqttHostName, AwsIotCoreConfig config);
             ConnectionResult connect() override;
-            ConnectionResult reconnect() override;
             ConnectionResult disconnect() override;
             PublishResult publish(char * payload) override;
         private:

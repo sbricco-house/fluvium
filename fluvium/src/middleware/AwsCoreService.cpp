@@ -6,6 +6,7 @@
 #include "aws_iot_mqtt_client_interface.h"
 #include "aws_iot_shadow_interface.h"
 using namespace middleware;
+#define AWS_TAG "aws_publisher"
 #define NO_CALLBACK NULL
 #define NO_CONTEXT_DATA NULL
 AwsCoreService::AwsCoreService(char * deviceName, AwsPrivacyConfig privacyConfig, MqttConfig mqttHostConfig, AwsIotCoreConfig config) 
@@ -36,28 +37,30 @@ ShadowConnectParameters_t AwsCoreService::createShadowConnectionParams(char * de
 }
 
 ConnectionResult AwsCoreService::connect() {
+    
     auto error = aws_iot_shadow_init(&mqttClient, &shadowInitParameter);
+    ESP_LOGI(AWS_TAG, "AWS INIT CODE : %d", error);
     if(error != SUCCESS) {
         return INITIALIZATION_PROBLEM;
     }
     error = aws_iot_shadow_connect(&mqttClient, &shadowConnectionParams);
+    ESP_LOGI(AWS_TAG, "AWS CONNECT CODE : %d", error);
     return error != SUCCESS ? NO_CONNECTION : middleware::OK;
 }
-
-ConnectionResult AwsCoreService::reconnect() {
-    auto error = aws_iot_mqtt_attempt_reconnect(&mqttClient);
-    return error != SUCCESS ? NO_CONNECTION : middleware::OK;
-}
-
 
 PublishResult AwsCoreService::publish(char * payload) {
-    ESP_LOGI("aws_shadow", "publishing.. : %s", payload);
     auto error = aws_iot_shadow_update(&mqttClient, deviceName, payload, NO_CALLBACK, NO_CONTEXT_DATA, config.maxTimeuot, false); //false because we don't need the update of device
+    ESP_LOGI(AWS_TAG, "AWS PUBLISH CODE : %d", error);
+    error = aws_iot_mqtt_yield(&mqttClient, 500);
+    ESP_LOGI(AWS_TAG, "AWS YIELD CODE : %d", error);
+    
     return error != SUCCESS ? PUBLISH_ERROR : PUBLISHED;
 }
 
 
 ConnectionResult AwsCoreService::disconnect() {
     auto error = aws_iot_shadow_disconnect(&mqttClient);
+    ESP_LOGI(AWS_TAG, "AWS DISCONNECT CODE : %d", error);
+    aws_iot_mqtt_free(&mqttClient);
     return error != SUCCESS ? DISCONNECTION_PROBLEM : OK;
 }
