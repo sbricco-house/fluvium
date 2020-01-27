@@ -14,7 +14,7 @@
 //extern "C" void app_main();
 void testSocketGoogle();
 
-void app_main() {
+/*void app_main() {
     
     auto gsm = networkfactory::createGsmTTGO("iliad");
 
@@ -59,4 +59,4 @@ void testSocketGoogle() {
     ESP_LOGE(TAG, "Shutting down socket and restarting...");
     shutdown(sock, 0);
     close(sock);
-}
+}*/

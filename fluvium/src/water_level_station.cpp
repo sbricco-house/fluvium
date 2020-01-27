@@ -33,12 +33,10 @@ const uart_port_t GPS_SERIAL = UART_NUM_2;
 const gpio_num_t GPS_PIN = GPIO_NUM_16;
 const gpio_num_t TRIG_PIN = GPIO_NUM_33;
 const gpio_num_t ECHO_PIN = GPIO_NUM_35;
-#define DEVICE_NAME "waterlevel:cesena:1";
+#define DEVICE_NAME "waterlevel:cesena:1"
 const int SAMPLING_COUNT = 10;
 
 const Buffer buffer(5);
-
-//extern "C" void app_main(void);
 
 void ground(void) {
     parser::WaterLevelParser* waterLevelParser = new parser::WaterLevelParser();
@@ -56,7 +54,7 @@ void ground(void) {
     );
     //printf("%s\n", certificate_pem_crt_start);
     middleware::MqttConfig mqttConfig(
-        "a1l0qetj8lwb0i-ats.iot.eu-west-3.amazonaws.com",
+        "a1l0qetj8lwb0i-ats.iot.eu-west-2.amazonaws.com",
          AWS_IOT_MQTT_PORT
     );
     middleware::AwsIotCoreConfig iotConfig { 1 };

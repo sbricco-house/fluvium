@@ -40,9 +40,9 @@ const int SAMPLING_COUNT = 10;
 
 const Buffer buffer(5);
 
-extern "C" void app_main(void);
+//extern "C" void app_main(void);
 
-void app_main(void) {
+/*void app_main(void) {
     Parser* parsers[] { new parser::GroundDataParser(), new parser::LocationParser() };
     task::ParserSet parserSet { parsers, 3 };
     //SETUP POWER MANAGEMENT ! TODO
@@ -74,4 +74,4 @@ void app_main(void) {
     task::Task::deployEsp32(consumer, 60000, 9012, "consumer");
     //task::Task::deployEsp32(locationTask, 500, 4096, "gps");
     vTaskDelay(portMAX_DELAY);
-}
+}*/

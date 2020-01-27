@@ -56,7 +56,7 @@ void app_main(void) {
     task::ParserSet parserSet { parsers, 3 };
     //SETUP POWER MANAGEMENT ! TODO
     //SETUP CONNECTION
-    network::Wifi net("DELL", "12345678");
+    network::Wifi net("TP-Link_6D7F", "68247461");
     //network::Gsm net = networkfactory::createGsmTTGO("iliad");
     //SETUP TIME AT FIRST BOOT
     boot::setupTimeAtFirstBoot(net);
@@ -68,7 +68,7 @@ void app_main(void) {
     );
     //printf("%s\n", certificate_pem_crt_start);
     middleware::MqttConfig mqttConfig(
-        "a1l0qetj8lwb0i-ats.iot.eu-west-3.amazonaws.com",
+        "a1l0qetj8lwb0i-ats.iot.eu-west-2.amazonaws.com",
          AWS_IOT_MQTT_PORT
     );
     middleware::AwsIotCoreConfig iotConfig { 1 };
