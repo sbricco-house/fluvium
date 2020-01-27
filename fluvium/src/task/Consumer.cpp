@@ -1,6 +1,7 @@
 #include "task/Consumer.h"
 #include "Util.h"
 #include "esp_log.h"
+
 using namespace task;
 using namespace buffering;
 using namespace middleware;
@@ -10,7 +11,7 @@ using namespace network;
 Consumer::Consumer(const Buffer& buffer, MiddlewareService& middleware, Network& net, ParserSet parsers) : Task(buffer), middleware(middleware), net(net), parsers(parsers) {}
 //TODO add controls on data publish
 void Consumer::run() {
-    net.connect();
+    while(!net.connect()) {};
     auto error = middleware.connect();
     if(error != ConnectionResult::OK) {
         ESP_LOGI(LOG_TAG, "no connection.. turn on sleep..");

@@ -86,10 +86,7 @@ esp_err_t esp_modem_dce_hang_up(modem_dce_t *dce)
 {
     modem_dte_t *dte = dce->dte;
     dce->handle_line = esp_modem_dce_handle_response_default;
-    DCE_CHECK(dte->send_cmd(dte, "ATH\r", MODEM_COMMAND_TIMEOUT_HANG_UP) == ESP_OK, "send command failed", err);
-    DCE_CHECK(dce->state == MODEM_STATE_SUCCESS, "hang up failed", err);
+    dte->send_cmd(dte, "ATH\r", MODEM_COMMAND_TIMEOUT_HANG_UP);
     ESP_LOGD(DCE_TAG, "hang up ok");
     return ESP_OK;
-err:
-    return ESP_FAIL;
 }

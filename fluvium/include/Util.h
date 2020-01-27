@@ -19,12 +19,15 @@ namespace timeutils {
     static inline millisecond timestampMs() {
         struct timeval tp;
         gettimeofday(&tp, NULL);
-        return tp.tv_sec * 1000 + tp.tv_usec / 1000;
+        return ((uint64_t)tp.tv_sec * 1000L) + ((uint64_t) tp.tv_usec / 1000L);
     }
     static inline microsecond timestampUs() {
         struct timeval tp;
         gettimeofday(&tp, NULL);
         return tp.tv_sec * 1000000L + tp.tv_usec;
+    }
+    static inline void delay(millisecond timeout) {
+        vTaskDelay(pdMS_TO_TICKS(timeout));
     }
 };
 

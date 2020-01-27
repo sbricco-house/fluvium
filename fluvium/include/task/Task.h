@@ -19,6 +19,6 @@ namespace task {
         public:
             Task(const Buffer& buffer) : buffer(buffer) {};
             virtual void run() = 0;
-            static void deployEsp32(Task& task, millisecond schedulingPeriod, int taskStackSize, char* name);
+            static void deployEsp32(Task& task, millisecond schedulingPeriod, int taskStackSize, const char* name);
     };
 }

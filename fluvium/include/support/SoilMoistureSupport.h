@@ -10,7 +10,7 @@ namespace support {
     class SparkFunMoisture : public SoilMoistureSensor {
         #define MAX_INPUT_VOLTAGE 2.2
         private:
-            static const adc_atten_t ATTENUATION = ADC_ATTEN_DB_6; // max input 2.2v
+            static const adc_atten_t ATTENUATION = ADC_ATTEN_DB_0; // max input 2.2v
             static const short MIN_SOIL_MOISTURE = 0;
             static const short MAX_SOIL_MOISTURE = 100;
             const gpio_num_t powerPin;

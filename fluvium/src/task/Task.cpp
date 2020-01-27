@@ -16,7 +16,7 @@ void task::Task::runTask(void * arg) {
 void task::Task::deployEsp32(Task& task, 
                         millisecond schedulingPeriod,
                         int taskStackSize,
-                        char* name) {
+                        const char* name) {
     auto context = new TaskContext { task, schedulingPeriod};
     xTaskCreate(Task::runTask, name, taskStackSize, context, STANDARD_PRIORITY, NULL);
 }

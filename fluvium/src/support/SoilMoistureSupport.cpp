@@ -1,4 +1,5 @@
 #include "support/SoilMoistureSupport.h"
+#include "Util.h"
 
 using namespace support;
 
@@ -15,6 +16,7 @@ void SparkFunMoisture::init() {
 }
 metric::relativehumidity SparkFunMoisture::senseSoilMoisture() {
     gpio_set_level(powerPin, HIGH);
+    timeutils::delay(100);
     int value = adc1_get_raw(channel);
     auto soilMoisture = mapRange(value, 0, precisionToMaxReadableValue(precision), MIN_SOIL_MOISTURE, MAX_SOIL_MOISTURE);
     gpio_set_level(powerPin, LOW);
