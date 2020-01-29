@@ -1,8 +1,9 @@
 <template>
     <v-container fluid>
+        <device-page ref="devicePage"/>
         <v-row class="ml-2 mr-2">
             <v-col cols="12" :sm="6" :md="4" :lg="3">
-                <stat-card name="fiume" 
+                <stat-card name="Fiume" 
                             :description="riverName | capitalize"
                             icon="mdi-waves"
                             color="grey"/>
@@ -46,6 +47,7 @@
                             footerDescription="aggiornato : adesso"/>
             </v-col>
         </v-row>
+        <v-btn v-for="device in river.devices" :key="device.name" @click="onClickDevice(device)"> {{device.name}} </v-btn>
         <v-row>
             <v-col cols="12">
                 <device-map :devices="river.devices"></device-map>
@@ -67,6 +69,7 @@ export default {
     },
     components : {
         "stat-card" : StatCard,
+        "device-page" : DevicePage,
         "device-map" : DeviceMap
     },
     data () {
@@ -82,18 +85,9 @@ export default {
         }
     },
     computed : {
-        alarm : function() {
-            return false;
-        },
-        deltaAvg : function() {
-            return this.river.deltaLevelAvg + " m"
-        },
-        rainQuantityAvg : function() {
-            return this.river.rainQuantityAvg + " mm"
-        },
-        length : function() {
-            return this.river.length  + " km"
-        },
+        deltaAvg : function() { return this.river.deltaLevelAvg + " m" },
+        rainQuantityAvg : function() { return this.river.rainQuantityAvg + " mm"},
+        length : function() {return this.river.length  + " km"},
         devicesInAllarmCount() {
             let allarmCount = this.river.devices.filter(dev => dev.metaData.alarm === "true").length
             return "dispositivi in allarme : " + allarmCount
@@ -117,8 +111,12 @@ export default {
             }
         }
     },
+    methods : {
+        onClickDevice : function(device) { this.$refs.devicePage.open(device) }
+    },
     mounted() {
-        aws.executeLambda("DescribeRiver", {river: this.riverName}).then(rec => this.river = rec.data.body)
+        aws.executeLambda("DescribeRiver", {river: this.riverName})
+        .then(rec => this.river = rec.data.body)
     }
 }
 </script>

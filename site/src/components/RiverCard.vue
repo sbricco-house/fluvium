@@ -4,7 +4,7 @@
             :src="river.imageSrc"
             class="white--text align-end"
             height="200px"
-            gradient="rgba(100,115,201,0), rgba(25,32,72,.8)"
+            gradient="rgba(100,115,201,0), rgba(15,12,12,.8)"
         >
             <v-card-title class="display-1">{{river.river | capitalize}}</v-card-title>
         </v-img>

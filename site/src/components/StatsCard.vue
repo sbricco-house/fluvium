@@ -20,7 +20,7 @@
         <v-card-text class="pt-0 text-right">
           <div class="subheading font-weight-black mb-2 grey--text" >{{name}}</div>
           <div class="headline font-weight-light ">{{description}}</div>
-          </v-card-text>
+        </v-card-text>
       </v-col>
     </v-row>
     <v-divider></v-divider>
