@@ -45,25 +45,29 @@
                             footerIcon="mdi-history"
                             footerDescription="aggiornato : adesso"/>
             </v-col>
-
-            
         </v-row>
         <v-row>
-            <p> mappa </p>
+            <v-col cols="12">
+                <device-map :devices="river.devices"></device-map>
+            </v-col>
         </v-row>
     </v-container>
 </template>
 
 <script>
 import StatCard from "@/components/StatsCard.vue"
+import DeviceMap from '@/components/DeviceMap.vue'
+
 import aws from "@/services/aws-lambda.js"
+
 export default {
     name : "river-page",
     props : {
         riverName : String
     },
     components : {
-        "stat-card" : StatCard
+        "stat-card" : StatCard,
+        "device-map" : DeviceMap
     },
     data () {
         return {

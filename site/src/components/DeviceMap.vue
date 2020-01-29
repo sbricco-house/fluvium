@@ -1,0 +1,75 @@
+<template>
+    <vl-map :controls="true" :load-tiles-while-interacting="true" class="map">
+        <vl-view :zoom.sync="zoom" :center="center" :rotation.sync="rotation"></vl-view>
+
+        <vl-layer-tile id="osm">
+            <vl-source-osm attributions="fluvium powered by openstreemap"/>
+        </vl-layer-tile>
+
+        <template v-for="device in devices">
+            <vl-feature v-if="device.data['gps']" :key="device.name" :properties="device">
+                <vl-geom-point :coordinates="device | mapLatLon"></vl-geom-point>
+                <vl-style-box>
+                    <vl-style-icon v-if="isWaterlevelType(device)" :src="require('@/assets/waves.png')" :scale="1" :size="[36, 36]"/>
+                    <vl-style-icon v-else :src="require('@/assets/terrain.png')" :scale="1" :size="[36, 36]"/>
+                </vl-style-box>
+            </vl-feature>
+        </template>
+
+        <vl-interaction-select :features.sync="selectedFeatures"></vl-interaction-select>
+        
+        </vl-map>
+</template>
+
+
+<style lang="scss" scoped>
+.map {
+  height: 400px;
+}
+</style>
+
+<script>
+export default {
+    name : "device-map",
+    props : {
+        devices : Array
+    },
+    data () {
+      return {
+        selectedFeatures: [],
+        zoom: 17,
+        rotation: 0
+      }
+    },
+    watch: {
+        selectedFeatures(features) {
+            if(features.length > 0) {
+                this.onMarkerClick(features[0].properties);
+            }
+        }
+    },
+    filters: {
+        mapLatLon: function(device) {
+            if(!device) return [];
+            return [parseFloat(device.data.gps.long), parseFloat(device.data.gps.lat)];
+        }
+    },
+    methods: {
+        onMarkerClick(device) {
+            console.log("Device selected: " + JSON.stringify(device));
+        },
+        isWaterlevelType(device) {
+            return device.name.split(':')[0] == "waterlevel";
+        }
+    },
+    computed: {
+        center() {
+            if(this.devices && this.devices.length > 0) {
+                let validGpsDevice = this.devices.find(dev => typeof(dev.data['gps']) !== 'undefined');
+                return validGpsDevice !== undefined ? this.$options.filters.mapLatLon(validGpsDevice) : [0, 0];
+            }
+            return [0, 0];
+        }
+    }
+}
+</script>
