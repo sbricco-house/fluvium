@@ -29,6 +29,9 @@
 </style>
 
 <script>
+
+import geo from '@/services/geo-utils.js'
+
 export default {
     name : "device-map",
     props : {
@@ -37,7 +40,7 @@ export default {
     data () {
       return {
         selectedFeatures: [],
-        zoom: 17,
+        zoom: 16,
         rotation: 0
       }
     },
@@ -50,23 +53,25 @@ export default {
     },
     filters: {
         mapLatLon: function(device) {
-            if(!device) return [];
-            return [parseFloat(device.data.gps.long), parseFloat(device.data.gps.lat)];
+            if(!device  ) return [];
+            return geo.convertLatLngToCoordinate(device.data.gps);
         }
     },
     methods: {
         onMarkerClick(device) {
-            console.log("Device selected: " + JSON.stringify(device));
+            this.$emit('onDeviceSelected', device);
         },
         isWaterlevelType(device) {
             return device.name.split(':')[0] == "waterlevel";
         }
     },
     computed: {
-        center() {
+        center: function() {
             if(this.devices && this.devices.length > 0) {
-                let validGpsDevice = this.devices.find(dev => typeof(dev.data['gps']) !== 'undefined');
-                return validGpsDevice !== undefined ? this.$options.filters.mapLatLon(validGpsDevice) : [0, 0];
+                let validGpsDevices = this.devices.filter(dev => typeof(dev.data['gps']) !== 'undefined').map(dev => dev.data['gps']);
+                let boundingBox = geo.calculateBoundingBox(validGpsDevices);
+                let coords = geo.convertLatLngToCoordinate(geo.centerOfBoundingBox(boundingBox));
+                return coords;
             }
             return [0, 0];
         }

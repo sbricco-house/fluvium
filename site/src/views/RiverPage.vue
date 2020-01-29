@@ -47,10 +47,14 @@
                             footerDescription="aggiornato : adesso"/>
             </v-col>
         </v-row>
-        <v-btn v-for="device in river.devices" :key="device.name" @click="onClickDevice(device)"> {{device.name}} </v-btn>
-        <v-row>
+        <v-row class="ml-2 mr-2">
             <v-col cols="12">
-                <device-map :devices="river.devices"></device-map>
+                <v-card elevation="6">    
+                    <v-card-title primary-title>
+                        Mappina bellina
+                    </v-card-title>
+                    <device-map :devices="river.devices" v-on:onDeviceSelected="onClickDevice"></device-map>
+                </v-card>
             </v-col>
         </v-row>
     </v-container>
@@ -59,6 +63,7 @@
 <script>
 import StatCard from "@/components/StatsCard.vue"
 import DeviceMap from '@/components/DeviceMap.vue'
+import DevicePage from '@/components/DevicePage.vue'
 
 import aws from "@/services/aws-lambda.js"
 
@@ -112,7 +117,9 @@ export default {
         }
     },
     methods : {
-        onClickDevice : function(device) { this.$refs.devicePage.open(device) }
+        onClickDevice : function(device) {
+            this.$refs.devicePage.open(device);
+        }
     },
     mounted() {
         aws.executeLambda("DescribeRiver", {river: this.riverName})
