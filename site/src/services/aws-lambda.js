@@ -7,7 +7,7 @@ let aws = {
             FunctionName : functionName,
             InvocationType : 'RequestResponse',
             LogType : 'None',
-            Payload: payloadArgs
+            Payload: JSON.stringify(payloadArgs)
         };
     
         return new Promise((accept, reject) => {

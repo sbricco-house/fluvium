@@ -3,17 +3,34 @@
         <v-row class="ml-2 mr-2">
             <v-col cols="12" :sm="6" :md="4" :lg="3">
                 <stat-card name="fiume" 
-                            :description="riverName"
-                            icon="mdi-home"
-                            color="success"
-                            footerIcon="mdi-success"
-                            footerDescription="stato : in allarme"
-                            :footerColor="error"/>
+                            :description="riverName | capitalize"
+                            icon="mdi-waves"
+                            color="grey"/>
             </v-col>
-            
+            <v-col cols="12" :sm="6" :md="4" :lg="3">
+                <stat-card  name="Stato"
+                            :description="river.state | capitalize"
+                            :icon="iconState"
+                            :color="colorState" />
+            </v-col>
+            <v-col cols="12" :sm="6" :md="4" :lg="3">
+                <stat-card  name="Lunghezza"
+                            :description="length"
+                            icon="mdi-road-variant"
+                            color="brown"/>
+            </v-col>
+
+            <v-col cols="12" :sm="6" :md="4" :lg="3">
+                <stat-card  name="Dispositivi"
+                            :description="river.devices.length.toString()"
+                            icon="mdi-bug"
+                            color="grey"
+                            footerIcon="mdi-information"
+                            :footerDescription="devicesInAllarmCount" />
+            </v-col>
             <v-col cols="12" :sm="6" :md="4" :lg="3">
                 <stat-card  name="Inalzamento medio"
-                            description="1.50 m"
+                            :description="deltaAvg"
                             icon="mdi-swap-vertical-bold"
                             color="red"
                             footerIcon="mdi-history"
@@ -22,34 +39,24 @@
                 
             <v-col cols="12" :sm="6" :md="4" :lg="3">
                 <stat-card  name="Acqua caduta"
-                            description="12.8 mm"
+                            :description="rainQuantityAvg"
                             icon="mdi-water"
                             color="blue"
                             footerIcon="mdi-history"
                             footerDescription="aggiornato : adesso"/>
             </v-col>
 
-            <v-col cols="12" :sm="6" :md="4" :lg="3">
-                <stat-card  name="Umidità del terreno"
-                            description="50 %"
-                            icon="mdi-terrain"
-                            color="brown"
-                            footerIcon="mdi-history"
-                            footerDescription="aggiornato : adesso" />
-            </v-col>
+            
         </v-row>
         <v-row>
             <p> mappa </p>
-        </v-row>
-
-        <v-row>
-            <p> statistiche </p>
         </v-row>
     </v-container>
 </template>
 
 <script>
 import StatCard from "@/components/StatsCard.vue"
+import aws from "@/services/aws-lambda.js"
 export default {
     name : "river-page",
     props : {
@@ -58,10 +65,56 @@ export default {
     components : {
         "stat-card" : StatCard
     },
+    data () {
+        return {
+            river : {
+                deltaLevelAvg : 0,
+                rainQuantityAvg : 0,
+                length : 0,
+                description : "",
+                state : "ok",
+                devices : []
+            },
+        }
+    },
     computed : {
         alarm : function() {
             return false;
+        },
+        deltaAvg : function() {
+            return this.river.deltaLevelAvg + " m"
+        },
+        rainQuantityAvg : function() {
+            return this.river.rainQuantityAvg + " mm"
+        },
+        length : function() {
+            return this.river.length  + " km"
+        },
+        devicesInAllarmCount() {
+            let allarmCount = this.river.devices.filter(dev => dev.metaData.alarm === "true").length
+            return "dispositivi in allarme : " + allarmCount
+        },
+        colorState : function() {
+            if(this.river.state === "allerta") {
+                return "warning"
+            } else if(this.river.state === "pericolo") {
+                return "error"
+            } else {
+                return "success"
+            }
+        },
+        iconState : function() {
+            if(this.river.state === "allerta") {
+                return "mdi-alert"
+            } else if(this.river.state === "pericolo") {
+                return "mdi-alert-decagram"
+            } else {
+                return "mdi-check-all"
+            }
         }
+    },
+    mounted() {
+        aws.executeLambda("DescribeRiver", {river: this.riverName}).then(rec => this.river = rec.data.body)
     }
 }
 </script>

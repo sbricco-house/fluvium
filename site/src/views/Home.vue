@@ -5,9 +5,8 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import RiverList from '@/components/RiverList.vue'
-
+import aws from "@/services/aws-lambda.js"
 export default {
   name: 'home',
   components: {
@@ -15,25 +14,11 @@ export default {
   },
   data () {
       return {
-        rivers : [
-          {
-            name: "Savio",
-            src: "https://upload.wikimedia.org/wikipedia/commons/f/f5/Camminata_lungo_il_fiume.jpg"
-          },
-          {
-            name: "Cesano",
-            src: "https://upload.wikimedia.org/wikipedia/commons/0/0c/Fiume_Cesano.jpg"
-          },
-          {
-            name: "Arno",
-            src: "https://www.firenze-online.com/img/conoscere/foto-fiumearno2.jpg"
-          },
-          {
-            name: "Po",
-            src: "https://www.skuola.net/news_foto/2018/affluenti-po.jpg"
-          }
-        ]
+        rivers : [],
       }
+  },
+  mounted() {
+    aws.executeLambda("GetRivers").then(result => this.rivers = result.data.body)
   }
 }
 </script>

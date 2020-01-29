@@ -1,12 +1,14 @@
 <template>
     <v-card v-ripple class="elevation-10" :to="riverPagePath">
         <v-img
-            :src="river.src"
+            :src="river.imageSrc"
             class="white--text align-end"
             height="200px"
+            gradient="rgba(100,115,201,0), rgba(25,32,72,.8)"
         >
-            <v-card-title class="display-1" v-text="river.name"></v-card-title>
+            <v-card-title class="display-1">{{river.river | capitalize}}</v-card-title>
         </v-img>
+        
     </v-card>
 </template>
 
@@ -18,7 +20,7 @@ export default {
     },
     computed : {
         riverPagePath : function() {
-            return "/river/" + this.river.name
+            return "/river/" + this.river.river
         }
     }
 }
