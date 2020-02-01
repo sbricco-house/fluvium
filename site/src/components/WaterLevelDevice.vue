@@ -25,17 +25,32 @@
             </v-col>
         </v-row>
         <v-row class="ml-2 mr-2 mt-10">
-            <v-col cols="12" :md="12" :lg="4">
-                <data-chart color="#00BCD4" title="Livello acqua" footerHistory="Ultimo giorno" 
-                            icon="mdi-swap-vertical-bold"/>
+            <v-col cols="12" :md="12" :lg="6">
+                <data-chart color="#00BCD4" 
+                            title="Livello acqua" 
+                            footerHistory="Ultimo giorno" 
+                            icon="mdi-swap-vertical-bold"
+                            :dataFormat="formats.hour"
+                            :data="levelDay"
+                />
             </v-col>
-            <v-col cols="12" :md="12" :lg="4">
-                <data-chart color="#00BCD4" title="Livello acqua" footerHistory="Ultimi 7 giorni" 
-                            icon="mdi-swap-vertical-bold"/>
+            <v-col cols="12" :md="12" :lg="6">
+                <data-chart color="#00BCD4" 
+                            title="Livello acqua" 
+                            footerHistory="Ultimi 7 giorni" 
+                            icon="mdi-swap-vertical-bold"
+                            :dataFormat="formats.day"
+                            :data="levelWeek"
+                />
             </v-col>
-            <v-col cols="12" :md="12" :lg="4">
-                 <data-chart color="#00BCD4" title="Livello acqua" footerHistory="Ultimo mese" 
-                            icon="mdi-swap-vertical-bold"/>
+            <v-col cols="12" :md="12" :lg="6">
+                 <data-chart color="#00BCD4" 
+                            title="Livello acqua" 
+                            footerHistory="Ultimo mese" 
+                            icon="mdi-swap-vertical-bold"
+                            :dataFormat="formats.monthAndDay"
+                            :data="levelMonth"
+                />
             </v-col>
         </v-row>
     </v-container>
@@ -45,26 +60,30 @@
 
 import StatCard from "@/components/StatsCard.vue"
 import DataChart from "@/components/DataChart.vue"
+let DateUtils = require("@/dateUtils.js");
+import aws from "@/services/aws-lambda.js"
+let utils = require("@/awsUtils");
 export default {
     name : "water-level-device",
     components : {
         "stat-card" : StatCard,
         'data-chart' : DataChart
     },
+    data() {
+        return {
+            formats : DateUtils,    
+            levelDay : [],
+            levelWeek : [],
+            levelMonth : []
+        }
+    },
     props : {
-        device : Object
+        device : Object,
     },
     computed: {
         updatedAt : function() {
-            var options = {
-                'month': '2-digit', 
-                'day': '2-digit', 
-                'year' : '2-digit', 
-                'hour' : 'numeric',
-                'minute' : 'numeric'
-            };
             let dateSensed = new Date(this.device.data.water_level.timestamp)
-            return "aggiornato : " + dateSensed.toLocaleString('it-IT', options);
+            return "aggiornato : " + dateSensed.toLocaleString('it-IT', DateUtils.fullDate);
         },
         state : function() {
             if(this.device.metaData.alarm === "true") {
@@ -73,12 +92,21 @@ export default {
                 return "Nella norma"
             }
         },
-        waterLevel : function() {
-            return this.device.data.water_level.delta + " m"
+        waterLevel : function() { 
+            return this.device.data.water_level.delta.toFixed(2) + " m" 
         },
-        thresholdAlarm : function() {
-            return this.device.metaData.thresholdAlarm + " m"
+        thresholdAlarm : function() { 
+            let thrAlarm = parseFloat(this.device.metaData.thresholdAlarm)
+            return thrAlarm .toFixed(2) + " m" 
         }
+    },
+    mounted() {
+        aws.executeLambda("GetSensorStats", utils.createStatRequest(this.device.name, "delta", "day"))
+            .then(rec => this.levelDay = rec.data.body)
+        aws.executeLambda("GetSensorStats", utils.createStatRequest(this.device.name, "delta", "week"))
+            .then(rec => this.levelWeek = rec.data.body)
+        aws.executeLambda("GetSensorStats", utils.createStatRequest(this.device.name, "delta", "month"))
+            .then(rec => this.levelMonth = rec.data.body)
     }
 }
 </script>

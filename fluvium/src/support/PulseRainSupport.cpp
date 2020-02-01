@@ -1,5 +1,7 @@
 #include "support/PulseRainSupport.h"
 using namespace support;
+#define BOUNDING_THR 300
+        
 void PulseRain::PULSE_REC(void* arg) {
     timeutils::millisecond current = timeutils::timestampMs();
     PulseRain* self = (PulseRain*)(arg);
@@ -16,6 +18,7 @@ PulseRain::PulseRain(gpio_num_t pulsablePin, metric::millimeter deltaQuantity) :
     xSemaphoreGive(semaphore);
     lastSensed = timeutils::timestampMs();
     mutex = portMUX_INITIALIZER_UNLOCKED;
+    rainQuantity = 0;
 }
 
 void PulseRain::init() {
@@ -23,6 +26,7 @@ void PulseRain::init() {
     gpio_set_direction(pulsablePin, GPIO_MODE_INPUT);
     gpio_pullup_en(pulsablePin);
     gpio_set_intr_type(pulsablePin, GPIO_INTR_POSEDGE);
+    gpio_install_isr_service(0); //TODO FIND BEST PLACE TO PUT THIS:.
     gpio_isr_handler_add(pulsablePin, PULSE_REC, this);
 }
 metric::millimeter PulseRain::getRainQuantity() {

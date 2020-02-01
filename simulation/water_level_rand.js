@@ -4,8 +4,8 @@ if(process.argv.length < 7) {
     console.log("pass: [name] [lat] [long] [max_delta] [std_value]")
     return
 }
-var lat = process.argv[3]
-var long = process.argv[4]
+var lat = parseFloat(process.argv[3])
+var long = parseFloat(process.argv[4])
 var maxDelta = parseFloat(process.argv[5])
 var standardValue = parseFloat(process.argv[6])
 
@@ -23,4 +23,4 @@ function randomValue(iterationCount) {
     )
 }
 
-simulatation.simulate(randomValue, 10000)
+simulatation.simulate(randomValue, 300000) //each five minutes..

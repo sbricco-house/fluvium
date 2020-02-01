@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-        <v-row  class="mt-4 mr-4 ml-4">
+        <v-row class="mt-n2">
             <v-col
                 v-for="river in rivers"
                 :key="river.name"

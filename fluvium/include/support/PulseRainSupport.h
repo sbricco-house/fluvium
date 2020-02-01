@@ -10,7 +10,6 @@ namespace support {
     //TODO create a support to manage interrupts
     #define ESP_INTR_FLAG_DEFAULT 0
     class PulseRain : public device::RainGauge {
-        #define BOUNDING_THR 300
         //ATTRIBUTES
         private:
             portMUX_TYPE mutex;

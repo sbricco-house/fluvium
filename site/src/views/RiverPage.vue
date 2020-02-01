@@ -1,7 +1,7 @@
 <template>
     <v-container fluid>
         <device-page ref="devicePage"/>
-        <v-row class="ml-2 mr-2">
+        <v-row class="mt-n2">
             <v-col cols="12" :sm="6" :md="4" :lg="3">
                 <stat-card name="Fiume" 
                             :description="riverName | capitalize"
@@ -47,12 +47,10 @@
                             footerDescription="aggiornato : adesso"/>
             </v-col>
         </v-row>
-        <v-row class="ml-2 mr-2">
+        <v-row class="">
             <v-col cols="12">
                 <v-card elevation="6">    
-                    <v-card-title primary-title>
-                        Mappina bellina
-                    </v-card-title>
+                    
                     <device-map :devices="river.devices" v-on:onDeviceSelected="onClickDevice"></device-map>
                 </v-card>
             </v-col>
@@ -122,8 +120,7 @@ export default {
         }
     },
     mounted() {
-        aws.executeLambda("DescribeRiver", {river: this.riverName})
-        .then(rec => this.river = rec.data.body)
+        aws.executeLambda("DescribeRiver", {river: this.riverName}).then(rec => this.river = rec.data.body)
     }
 }
 </script>

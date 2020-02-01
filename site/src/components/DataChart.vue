@@ -15,6 +15,8 @@
 
 <script>
 import VueApexCharts from 'vue-apexcharts'
+let DateUtils = require("@/dateUtils.js");
+
 export default {
     components: {
         apexchart: VueApexCharts,
@@ -23,66 +25,90 @@ export default {
         color : String,
         title : String,
         footerHistory : String,
+        dataFormat : Object,
         icon : String,
+        data : Array
     },
     computed: {
-        
+        xShow : function() {
+            let firstDate = Object.assign({}, this.dataFormat)
+            let secondDate = Object.assign({}, DateUtils.monthAndDay)
+            return JSON.stringify(firstDate) === JSON.stringify(secondDate) ? false : true
+        },
+        sensed : function() {
+            return this.data.map(element => (element.data.toFixed(2)))
+        },
+        timestamps : function() {
+            return this.data.map(element => new Date(element.timestamp).toLocaleString('it-IT', this.dataFormat))
+        },
         sheetColor : function() {
             return "background-color: " + this.color
         },
         series : function() {
             return [{
                 name: this.title,
-                data: [10, 41, 35, 51, 49, 62, 69, 91, 148],
+                data: this.sensed,
             }]
-        }
-    },
-    data: () => ({
-        
-        chartOptions: {
-            grid: {
-                show: false
-            },
-            chart: {
-                type: 'line',
-                zoom: {
-                    enabled: false
-                },
-                toolbar: {
+        },
+        chartOptions : function() {
+            return {
+                    grid: {
                     show: false
                 },
-            },
-            stroke: {
-                curve: 'smooth',
-                width: 5,
-                colors : ["#fff"]
-            },
-            
-            xaxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
-                labels: {
-                    style: {
-                        colors: "#fff",
-                        fontSize: '15px',
+                responsive: [{
+                    breakpoint: 800,
+                    options: {
+                        xaxis: {                
+                            labels: {
+                                show : false
+                            }
+                        }
+                    }
+                }],
+                chart: {
+                    type: 'line',
+                    zoom: {
+                        enabled: false
+                    },
+                    toolbar: {
+                        show: false
                     },
                 },
-                axisBorder: {
-                    show: false,
+                stroke: {
+                    curve: 'smooth',
+                    width: 5,
+                    colors : ["#fff"]
                 },
-                axisTicks: {
-                    show: false,
-                },
-            },
-            yaxis: {
-                labels: {
-                    style: {
-                        color : "#fff",
-                        fontSize: '15px',
+                
+                xaxis: {
+                    tickAmount: 1,
+                    categories: this.timestamps,            
+                    
+                    labels: {
+                        show : true,
+                        style: {
+                            colors: "#fff",
+                            fontSize: '12px',
+                        },
                     },
+                    axisBorder: {
+                        show: false,
+                    },
+                    axisTicks: {
+                        show: false,
+                    },
+                },
+                yaxis: {
+                    labels: {
+                        style: {
+                            color : "#fff",
+                            fontSize: '12px',
+                        },
+                    }
                 }
             }
-        },
-    }),
+        }
+    }
 }
 </script>
 

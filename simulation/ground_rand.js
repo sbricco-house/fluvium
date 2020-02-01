@@ -5,15 +5,15 @@ if(process.argv.length < 7) {
     return
 }
 console.log("ARG LEN = " + process.argv.length)
-var lat = process.argv[3]
-var long = process.argv[4]
+var lat = parseFloat(process.argv[3])
+var long = parseFloat(process.argv[4])
 var baseWater = parseFloat(process.argv[5])
 var maxWater = parseFloat(process.argv[6])
 
 console.log("base Water = " + baseWater)
 console.log("max Water = " + maxWater)
 function sinValue(iterationCount) {
-    let rainQauntity = baseWater + Math.random() * (maxWater - baseWater) + baseWater
+    let rainQauntity = baseWater + Math.random() * (maxWater - baseWater)
     return simulatation.awsDataCreation(lat, long,
         {
             ground : {
@@ -25,4 +25,4 @@ function sinValue(iterationCount) {
     )
 }
 
-simulatation.simulate(sinValue, 10000)
+simulatation.simulate(sinValue, 300000) //each five minutes..
