@@ -11,8 +11,8 @@
             <v-col cols="12" :sm="6" :md="4" :lg="3">
                 <stat-card  name="Stato"
                             :description="river.state | capitalize"
-                            :icon="iconState"
-                            :color="colorState" />
+                            :icon="stateInfo.icon"
+                            :color="stateInfo.color" />
             </v-col>
             <v-col cols="12" :sm="6" :md="4" :lg="3">
                 <stat-card  name="Lunghezza"
@@ -49,8 +49,7 @@
         </v-row>
         <v-row class="">
             <v-col cols="12">
-                <v-card elevation="6">    
-                    
+                <v-card elevation="6">
                     <device-map :devices="river.devices" v-on:onDeviceSelected="onClickDevice"></device-map>
                 </v-card>
             </v-col>
@@ -59,11 +58,13 @@
 </template>
 
 <script>
+//TODO Create river info component
 import StatCard from "@/components/StatsCard.vue"
 import DeviceMap from '@/components/DeviceMap.vue'
 import DevicePage from '@/components/DevicePage.vue'
-
+import river from "@/model/river.js"
 import aws from "@/services/aws-lambda.js"
+import mqtt from "@/services/aws-mqtt.js"
 
 export default {
     name : "river-page",
@@ -75,52 +76,41 @@ export default {
         "device-page" : DevicePage,
         "device-map" : DeviceMap
     },
-    data () {
-        return {
-            river : {
-                deltaLevelAvg : 0,
-                rainQuantityAvg : 0,
-                length : 0,
-                description : "",
-                state : "ok",
-                devices : []
-            },
-        }
-    },
+    data : () => ({
+        river : river.default,
+    }),
     computed : {
         deltaAvg : function() { return this.river.deltaLevelAvg + " m" },
-        rainQuantityAvg : function() { return this.river.rainQuantityAvg + " mm"},
-        length : function() {return this.river.length  + " km"},
+        rainQuantityAvg : function() { return this.river.rainQuantityAvg + " mm" },
+        length : function() { return this.river.length  + " km" },
         devicesInAllarmCount() {
             let allarmCount = this.river.devices.filter(dev => dev.metaData.alarm === "true").length
             return "dispositivi in allarme : " + allarmCount
         },
-        colorState : function() {
-            if(this.river.state === "allerta") {
-                return "warning"
-            } else if(this.river.state === "pericolo") {
-                return "error"
-            } else {
-                return "success"
-            }
-        },
-        iconState : function() {
-            if(this.river.state === "allerta") {
-                return "mdi-alert"
-            } else if(this.river.state === "pericolo") {
-                return "mdi-alert-decagram"
-            } else {
-                return "mdi-check-all"
+        stateInfo : function() {
+            switch(this.river.state) {
+                case "allerta" : return { icon : "mdi-alert", color : "warning" }
+                case "pericolo" : return { icon : "mdi-alert-decagram", color : "error" }
+                default : return { icon : "mdi-check-all", color : "success"}
             }
         }
+
     },
     methods : {
-        onClickDevice : function(device) {
-            this.$refs.devicePage.open(device);
-        }
+        onClickDevice : function(device) { this.$refs.devicePage.open(device); }
     },
     mounted() {
+        //subscribe on river topics
         aws.executeLambda("DescribeRiver", {river: this.riverName}).then(rec => this.river = rec.data.body)
+        mqtt.subscribeRiverNotification(
+            this.riverName,
+            payload => this.river.state = payload.state,
+            payload => this.river.devices.filter(dev => dev.name === payload.name)
+                                        .forEach(dev => dev.metaData.alarm = payload.state)
+        )
+    },
+    destroyed() {
+        mqtt.unsubscribeRiverNotification(this.riverName)
     }
 }
 </script>

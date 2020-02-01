@@ -13,3 +13,10 @@ const shadow = new AWS.IotData({
 
 module.exports.iot = iot
 module.exports.shadow = shadow
+module.exports.dataCreation = function(data) {
+    return {
+        state : {
+            reported : data
+        }
+    }
+}

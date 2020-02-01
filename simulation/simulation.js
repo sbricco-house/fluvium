@@ -3,23 +3,6 @@
 */
 //TODO Add gps information
 const connection = require("./aws_connection")
-
-//creation of basic structure of iot shadow data
-function awsDataCreation(lat, long,data) {
-    data.gps = {
-        lat : lat,
-        long : long,
-        altitude : 0,
-        hdop : 1,
-        fixTimestamp : Date.now()
-    }
-    return {
-        state : {
-            reported : data
-        }
-    }
-}
-
 /*
 simulation publishing data at fixed time (period.).
 simulationLogic describe how to create data.
@@ -49,4 +32,3 @@ async function simulate(simulationLogic, period) {
 }
 
 module.exports.simulate = simulate
-module.exports.awsDataCreation = awsDataCreation

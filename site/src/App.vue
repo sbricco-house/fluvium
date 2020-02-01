@@ -36,14 +36,8 @@
 
 export default {
   name: 'App',
-
-  data: () => ({
-    //
-  }),
   methods : {
-    homepage : function() {
-      this.$router.push("/")
-    }
+    homepage : function() { this.$router.push("/") }
   }
 };
 </script>

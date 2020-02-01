@@ -1,19 +1,19 @@
 const simulatation = require("./simulation")
+const connection = require("./aws_connection")
 
-if(process.argv.length < 7) {
-    console.log("pass: [name] [lat] [long] [max_delta] [std_value]")
+if(process.argv.length < 6) {
+    console.log("pass: [name] [max_delta] [std_value] [period]")
     return
 }
-var lat = parseFloat(process.argv[3])
-var long = parseFloat(process.argv[4])
-var maxDelta = parseFloat(process.argv[5])
-var standardValue = parseFloat(process.argv[6])
+var period = parseInt(process.argv[5])
+var maxDelta = parseFloat(process.argv[3])
+var standardValue = parseFloat(process.argv[4])
 
 console.log("DELTA = " + maxDelta)
 console.log("STANDARD VALUE = " + standardValue)
 function sinValue(iterationCount) {
     let waterLevelDelta = standardValue + Math.sin(iterationCount / 5) * maxDelta
-    return simulatation.awsDataCreation(lat, long,
+    return connection.dataCreation(
         {
             water_level : {
                 delta: waterLevelDelta,
@@ -23,4 +23,4 @@ function sinValue(iterationCount) {
     )
 }
 
-simulatation.simulate(sinValue, 300000) //each five minutes..
+simulatation.simulate(sinValue, period) //each five minutes..

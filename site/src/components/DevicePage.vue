@@ -25,6 +25,7 @@
 <script>
 import WaterLevelDevice from "@/components/WaterLevelDevice.vue"
 import GroundDevice from "@/components/GroundDevice.vue"
+import aws from "@/services/aws-mqtt.js"
 export default {
     name : "device-page",
     data () {
@@ -40,10 +41,19 @@ export default {
     methods : {
         open : function(device){
             this.device = device,
+            aws.subscribeShadow(device.name, (shadow) => {
+                console.log("SHADOW UPDATED : = " + JSON.stringify(shadow))
+                if(this.isWaterLevel(device)) {
+                    device.data.water_level = shadow.state.reported.water_level
+                } else {
+                    device.data.ground = shadow.state.reported.ground
+                }
+            })
             this.dialog = true
         },
         close : function() {
             this.dialog = false
+            aws.unsubscibeShadow(this.device.name)
         },
         isWaterLevel : function(device) {
             return device.name.includes("waterlevel")

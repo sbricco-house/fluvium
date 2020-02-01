@@ -1,7 +1,7 @@
 
-import lambda from "@/aws-config"
+import awsElements from "@/aws-config"
 
-let aws = {
+let lambda = {
     executeLambda: function(functionName, payloadArgs) {
         let params = {
             FunctionName : functionName,
@@ -11,7 +11,7 @@ let aws = {
         };
     
         return new Promise((accept, reject) => {
-            lambda.invoke(params, (err, data) => {
+            awsElements.lambda.invoke(params, (err, data) => {
                 if(!err) { 
                     accept({
                         status: data.StatusCode,
@@ -25,4 +25,4 @@ let aws = {
     }
 }
 
-export default aws;
+export default lambda;

@@ -5,7 +5,7 @@
                 <stat-card name="Stato" 
                     :description="state"
                     icon="mdi-information"
-                    color="info" />
+                    :color="stateColor" />
             </v-col>
             <v-col cols="12" :sm="6" :md="6" :lg="3">
                 <stat-card name="Livello del fiume" 
@@ -20,7 +20,7 @@
                 <stat-card name="Soglia allarme" 
                             :description="thresholdAlarm"
                             icon="mdi-auto-upload"
-                            color="warning" />
+                            color="info" />
                 
             </v-col>
         </v-row>
@@ -86,14 +86,21 @@ export default {
             return "aggiornato : " + dateSensed.toLocaleString('it-IT', DateUtils.fullDate);
         },
         state : function() {
-            if(this.device.metaData.alarm === "true") {
-                return "In allarme"
-            } else {
-                return "Nella norma"
+            switch(this.device.metaData.alarm) {
+                case "true" : return "In allarme"
+                default : return "Nella norma"
+            }
+        },
+        stateColor : function() {
+            switch(this.device.metaData.alarm) {
+                case "true" : return "warning"
+                default : return "success"
             }
         },
         waterLevel : function() { 
-            return this.device.data.water_level.delta.toFixed(2) + " m" 
+            let delta = this.device.data.water_level.delta.toFixed(2)
+            let zero = this.device.metaData.zero
+            return (zero - delta).toFixed(2) + " m" 
         },
         thresholdAlarm : function() { 
             let thrAlarm = parseFloat(this.device.metaData.thresholdAlarm)
