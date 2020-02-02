@@ -44,7 +44,7 @@ esp_err_t Wifi::wifiEventHandler(void * arg, system_event_t *event) {
         }
     return ESP_OK;
 }
-Wifi::Wifi(char * ssid, char * password) {
+Wifi::Wifi(const char * ssid, const char * password) {
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -66,8 +66,6 @@ Wifi::Wifi(char * ssid, char * password) {
     ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
     ESP_ERROR_CHECK( esp_wifi_start() );
 }
-
-
 bool Wifi::connect() {
     if(state == CONNECTED) {
         return true;

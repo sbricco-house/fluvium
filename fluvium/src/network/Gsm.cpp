@@ -4,38 +4,31 @@
 #include "esp_log.h"
 
 #include "network/Gsm.h"
-#include "sim800.h"
-#include <driver/gpio.h>
 
 namespace network {
     const char* TAG = "GSM";
     const int CONNECTING_BIT = BIT0;
     const int CONNECT_BIT = BIT1;
     const int DISCONNECT_BIT = BIT2;
-    const int INIT_TIMEOUT_MS = 5000;
 }
 
 using namespace network;
 
 // internal functions
-static void printNetworkInfo(ppp_client_ip_info_t * ipinfo);
+static void printNetworkInfo(modem::ModemIpInfo * ipinfo);
 
-Gsm::Gsm(const GsmConfig config) : config(config), eventGroup(xEventGroupCreate()) {
+Gsm::Gsm(modem::Modem& modem) : modem(modem), eventGroup(xEventGroupCreate()) {
     tcpip_adapter_init();
-    gpio_pad_select_gpio(config.resetPin); // RST
-    gpio_pad_select_gpio(config.powerKeyPin); // PW KEY
-    gpio_pad_select_gpio(config.powerOnPin); // POWER_ON
-    gpio_set_direction(config.resetPin, GPIO_MODE_OUTPUT);
-    gpio_set_direction(config.powerKeyPin, GPIO_MODE_OUTPUT);
-    gpio_set_direction(config.powerOnPin, GPIO_MODE_OUTPUT);
     initModem();
 }
 
 Gsm::~Gsm() {
     // free all allocated resources
-    esp_modem_stop_ppp(dteHandler);
+    modem.unregisterEventHandler(modemEventHandler);
+    //modem.stop();
+    /*esp_modem_stop_ppp(dteHandler);
     dteHandler->deinit(dteHandler);
-    dceHandler->deinit(dceHandler);
+    dceHandler->deinit(dceHandler);*/
     vEventGroupDelete(eventGroup);
 }
 
@@ -67,6 +60,7 @@ bool Gsm::connect() {
         default:
             return false;
     }
+    return false;
 }
 
 bool Gsm::disconnect() {
@@ -82,15 +76,11 @@ bool Gsm::disconnect() {
         default:
             return false;
     }
+    return false;
 }
 
 bool Gsm::startConnect() {
-    if(esp_modem_connect_ppp(dteHandler, &config.pppConfig) != ESP_OK) {
-        printf("Start connect fail\n");
-        return false;
-    }
-    printf("Start connect success\n");
-    return true;
+    return modem.connect();
 }
 
 bool Gsm::waitConnectionDone() {
@@ -102,9 +92,7 @@ bool Gsm::waitConnectionDone() {
 }
 
 bool Gsm::startDisconnect() {
-    ESP_LOGI(TAG, "Start disconnection\n");
-    esp_modem_disconnect_ppp(dteHandler);
-    return true;
+    return modem.disconnect();
 }
 
 bool Gsm::waitDisconnectionDone() {
@@ -125,75 +113,40 @@ bool Gsm::standby() {
     //state = STANDBY;
     ESP_LOGD(TAG, "TODO: implement using AT+CFUN\n");
     return true;
-    return true;
 }
 
 bool Gsm::initModem() {
-    powerOnModem();
-
-    vTaskDelay(pdMS_TO_TICKS(INIT_TIMEOUT_MS));
-
-    dteHandler = esp_modem_dte_init(&config.dteConfig);
-    if(dteHandler == NULL) {
-        ESP_LOGE(TAG, "Error during DTE initialization\n");
-        return false;
-    }
-
-    esp_modem_add_event_handler(dteHandler, modemEventHandler, this);
-    dceHandler = sim800_init(dteHandler);
-    if(dceHandler == NULL) {
-        ESP_LOGI(TAG, "Error during DCE sim800 initialization\n");
-        return false;
-    }
-
-    dceHandler->set_flow_ctrl(dceHandler, MODEM_FLOW_CONTROL_NONE);
-    dceHandler->store_profile(dceHandler);
-
-    return esp_modem_start_ppp(dteHandler) == ESP_OK;
-}
-
-void Gsm::powerOnModem() {
-    gpio_set_level(config.powerKeyPin, 0);
-    gpio_set_level(config.resetPin, 1);
-    gpio_set_level(config.powerOnPin, 1);
+    modem.registerEventHandler(modemEventHandler, this);
+    return modem.start();
 }
 
 void Gsm::modemEventHandler(void* event_handler_arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
     Gsm* gsm = (Gsm*) event_handler_arg;
     switch (event_id) {
-        case MODEM_EVENT_PPP_START:
+        case PPP_START:
             ESP_LOGI(TAG, "Modem PPP Started");
             xEventGroupClearBits(gsm->eventGroup, DISCONNECT_BIT | CONNECT_BIT);
             xEventGroupSetBits(gsm->eventGroup, CONNECTING_BIT);
             break;
-        case MODEM_EVENT_PPP_CONNECT: {
+        case PPP_CONNECTED: {
             ESP_LOGI(TAG, "Modem Connect to PPP Server");
-            printNetworkInfo(static_cast<ppp_client_ip_info_t *>(event_data));
+            printNetworkInfo(static_cast<modem::ModemIpInfo *>(event_data));
             xEventGroupClearBits(gsm->eventGroup, CONNECTING_BIT | DISCONNECT_BIT);
             xEventGroupSetBits(gsm->eventGroup, CONNECT_BIT);
             break;
         }
-        case MODEM_EVENT_PPP_DISCONNECT: {
-                ESP_LOGI(TAG, "Modem Disconnect from PPP Server");
-                // the sim800 library dont switch to AT command mode, force disconnect
-                // in order to force the switch to AT command mode.
-                gsm->startDisconnect(); // force a user interrupt
-            }
-            break;
-        case MODEM_EVENT_PPP_STOP:
-            ESP_LOGI(TAG, "Modem PPP Stopped");
-            xEventGroupClearBits(gsm->eventGroup, CONNECTING_BIT | DISCONNECT_BIT);
-            xEventGroupSetBits(gsm->eventGroup, DISCONNECT_BIT);
-            break;
-        case MODEM_EVENT_UNKNOWN:
-            ESP_LOGW(TAG, "Unknow line received: %s", (char *)event_data);
+        case PPP_DISCONNECTED:
+        case PPP_STOP:
+            ESP_LOGI(TAG, "%s", (event_id == PPP_STOP) ? "Modem PPP Stopped" : "Modem Disconnect from PPP Server");
+            xEventGroupClearBits(gsm->eventGroup, CONNECTING_BIT | CONNECT_BIT);
+            xEventGroupSetBits(gsm->eventGroup, DISCONNECT_BIT); 
             break;
         default:
             break;
     }
 }
 
-static void printNetworkInfo(ppp_client_ip_info_t * ipinfo) {
+static void printNetworkInfo(modem::ModemIpInfo* ipinfo) {
     ESP_LOGI(TAG, "~~~~~~~~~~~~~~");
     ESP_LOGI(TAG, "IP          : " IPSTR, IP2STR(&ipinfo->ip));
     ESP_LOGI(TAG, "Netmask     : " IPSTR, IP2STR(&ipinfo->netmask));

@@ -9,7 +9,7 @@ namespace network {
             NetworkState state;
             EventGroupHandle_t wifiEventGroup;
         public:
-            Wifi(char * ssid, char * password);
+            Wifi(const char * ssid, const char * password);
             NetworkState getState() override;
             bool connect() override;
             bool disconnect() override;

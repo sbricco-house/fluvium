@@ -11,7 +11,7 @@ using namespace network;
 Consumer::Consumer(const Buffer& buffer, MiddlewareService& middleware, Network& net, ParserSet parsers) : Task(buffer), middleware(middleware), net(net), parsers(parsers) {}
 //TODO add controls on data publish
 void Consumer::run() {
-    while(!net.connect()) {};
+    net.connectWithAttempts(CONFIG_NETWORK_RECONNECT_ATTEMTPS);
     auto error = middleware.connect();
     if(error != ConnectionResult::OK) {
         ESP_LOGI(LOG_TAG, "no connection.. turn on sleep..");
@@ -33,6 +33,6 @@ void Consumer::run() {
         }
         delete data;
     }
+    middleware.disconnect();
     net.disconnect();
-    middleware.disconnect();    
 }

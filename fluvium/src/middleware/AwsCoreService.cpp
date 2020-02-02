@@ -19,7 +19,7 @@ AwsCoreService::AwsCoreService(char * deviceName, AwsPrivacyConfig privacyConfig
 ShadowInitParameters_t AwsCoreService::createShadowInitParams(MqttConfig mqttHostConfig, AwsPrivacyConfig privacyConfig) {
     ShadowInitParameters_t shadowParameter = ShadowInitParametersDefault;
     //shadow configuration
-    shadowParameter.pHost = mqttHostConfig.name;
+    shadowParameter.pHost = (char*) mqttHostConfig.name;
     shadowParameter.port = mqttHostConfig.port;
     shadowParameter.pClientCRT = privacyConfig.certificatePem;
     shadowParameter.pClientKey = privacyConfig.privateKey;

@@ -1,29 +1,32 @@
 #pragma once
 #include "Gsm.h"
+#include "SerialDCE.h"
+#include "Sim800.h"
+#include <memory>
 
 namespace networkfactory {
     static network::Gsm createGsmTTGO(const char* apn) {
-        esp_modem_dte_config_t dteConfig = ESP_MODEM_DTE_DEFAULT_CONFIG();
-        dteConfig.port_num = UART_NUM_1;
-        dteConfig.rx_pin = GPIO_NUM_26;
-        dteConfig.tx_pin = GPIO_NUM_27;
+        using namespace modem;
+        using namespace serial;
 
-        esp_ppp_config_t pppConfig = ESP_MODEM_PPP_DEFAULT_CONFIG(apn);
+        SerialConfig serialConfig = {
+            .uartPort = UART_NUM_1,
+            .rxPin = GPIO_NUM_26,
+            .txPin = GPIO_NUM_27,
+            .baudrate = 115200
+        };
 
-        /*esp_ppp_config_t pppConfig = {
-            .apn_name = apn,
-            .ppp_auth_username = "",
-            .ppp_auth_password = ""
-        };*/
-
-        network::GsmConfig gsmConfig = { 
-            .dteConfig = dteConfig, 
-            .pppConfig = pppConfig, 
+        Sim800Config modemConfig = {
+            .apn = apn,
+            .username = "",
+            .password = "",
             .resetPin = GPIO_NUM_5, 
             .powerKeyPin = GPIO_NUM_4, 
             .powerOnPin = GPIO_NUM_23
         };
 
-        return network::Gsm(gsmConfig);
+        auto dce = new serial::SerialDCE(serialConfig);
+        auto modem = new modem::Sim800(modemConfig, *dce);
+        return network::Gsm(*modem);
     }
 }

@@ -4,6 +4,8 @@
  * Espressif IoT Development Framework Configuration
  * 
  */
+
+#define CONFIG_NETWORK_RECONNECT_ATTEMTPS 5
 #define CONFIG_NMEA_STATEMENT_GGA 1
 #define CONFIG_NMEA_STATEMENT_RMC 1
 

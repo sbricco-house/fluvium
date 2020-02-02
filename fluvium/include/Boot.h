@@ -11,7 +11,7 @@ namespace boot {
     static inline int getBootCount() { return bootCount; }
     static inline bool isFirstBoot() { return getBootCount() == 1; }
     static inline void setupTimeAtFirstBoot(network::Network& net) {
-        while (!net.connect()){};
+        while(!net.connect()) { vTaskDelay(pdMS_TO_TICKS(200)); }
         ntputils::setupTime();
     }
 }

@@ -56,8 +56,8 @@ void app_main(void) {
     task::ParserSet parserSet { parsers, 3 };
     //SETUP POWER MANAGEMENT ! TODO
     //SETUP CONNECTION
-    network::Wifi net("TP-Link_6D7F", "68247461");
-    //network::Gsm net = networkfactory::createGsmTTGO("iliad");
+    //network::Wifi net("TP-Link_6D7F", "68247461");
+    network::Gsm net = networkfactory::createGsmTTGO("iliad");
     //SETUP TIME AT FIRST BOOT
     boot::setupTimeAtFirstBoot(net);
     //middleware::FakeMiddleware middleware;
@@ -75,19 +75,19 @@ void app_main(void) {
     middleware::AwsCoreService middleware("waterlevel:cesena:1", privacySetting, mqttConfig, iotConfig);
     //SETUP TIMESTAP TODO!
     //SENSORS CREATION
-    support::GpsNmea gps(GPS_SERIAL, GPS_PIN);
-    support::DS18B20 ds18b20(GPIO_NUM_5, support::P9);
-    support::Sonar sonar(TRIG_PIN, ECHO_PIN);
-    support::PulseRain rainGauge(REED_SWITCH_PIN, DELTA_QUANTITY);
-    support::SparkFunMoisture soilMoisture(SOIL_PIN, SOIL_INPUT_PIN, SOIL_PRECISION);
+    //support::GpsNmea gps(GPS_SERIAL, GPS_PIN);
+    //support::DS18B20 ds18b20(GPIO_NUM_5, support::P9);
+    //support::Sonar sonar(TRIG_PIN, ECHO_PIN);
+    //support::PulseRain rainGauge(REED_SWITCH_PIN, DELTA_QUANTITY);
+    //support::SparkFunMoisture soilMoisture(SOIL_PIN, SOIL_INPUT_PIN, SOIL_PRECISION);
     //TASKs CREATION
-    task::WaterLevelTask waterLevelTask(buffer, sonar, ds18b20, SAMPLING_COUNT);
-    task::LocationTask locationTask(buffer, gps);
+    //task::WaterLevelTask waterLevelTask(buffer, sonar, ds18b20, SAMPLING_COUNT);
+    //task::LocationTask locationTask(buffer, gps);
     task::Consumer consumer(buffer, middleware, net, parserSet);
-    task::GroundStationTask groundStationTask(buffer, soilMoisture, rainGauge, SAMPLING_COUNT);
-    task::Task::deployEsp32(waterLevelTask, 30000, 1024, "water_level");
-    task::Task::deployEsp32(groundStationTask, 30000, 2024, "ground_station");
-    task::Task::deployEsp32(consumer, 60000, 9012, "consumer");
-    task::Task::deployEsp32(locationTask, 500, 4096, "gps");
+    //task::GroundStationTask groundStationTask(buffer, soilMoisture, rainGauge, SAMPLING_COUNT);
+    //task::Task::deployEsp32(waterLevelTask, 30000, 1024, "water_level");
+    //task::Task::deployEsp32(groundStationTask, 30000, 2024, "ground_station");
+    task::Task::deployEsp32(consumer, 10000, 9012, "consumer");
+    //task::Task::deployEsp32(locationTask, 500, 4096, "gps");
     vTaskDelay(portMAX_DELAY);
 }

@@ -1,33 +1,47 @@
-// Copyright 2015-2018 Espressif Systems (Shanghai) PTE LTD
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "Modem.h"
+#include "DCE.h"
+#include "freertos/FreeRTOS.h"
+#include "esp_event.h"
+#include "netif/ppp/pppapi.h"
+#include "netif/ppp/pppos.h"
+#include "lwip/dns.h"
+#include "tcpip_adapter.h"
+#include "esp_log.h"
 
-#include "modem_dce_service.h"
-#include "modem.h"
+namespace modem {
+    struct Sim800Config {
+        const char* apn;
+        const char* username;
+        const char* password;
+        gpio_num_t resetPin;
+        gpio_num_t powerKeyPin;
+        gpio_num_t powerOnPin;
+    };
 
-/**
- * @brief Create and initialize SIM800 object
- *
- * @param dte Modem DTE object
- * @return modem_dce_t* Modem DCE object
- */
-modem_dce_t *sim800_init(modem_dte_t *dte);
+    class Sim800 : public Modem {
+        private:
+            Sim800Config config;
+            dce::DCE& dce;
+            esp_event_loop_handle_t eventloop;
+            ppp_pcb* ppp;
+            netif pppif;
+            
+        public:
+            Sim800(Sim800Config simConfig, dce::DCE& dce);
+            bool start() override;
+            bool connect() override;
+            bool disconnect() override;
+            void registerEventHandler(ModemEventHandler eventHandler, Context ctx) override;
+            void unregisterEventHandler(ModemEventHandler eventHandler) override;
+            
+            bool enablePPP(const char* apn);
+            bool enableCommand();
 
-#ifdef __cplusplus
+        private:
+            void turnOnModule();
+            static uint32_t pppOutputHandler(ppp_pcb *pcb, uint8_t *data, uint32_t len, void *ctx);
+            static void pppStatusChangeHandler(ppp_pcb *pcb, int err_code, void *ctx);
+    };
 }
-#endif

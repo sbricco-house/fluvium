@@ -19,8 +19,7 @@ void testSocketGoogle();
     auto gsm = networkfactory::createGsmTTGO("iliad");
 
     ESP_LOGI(TAG, "Connecting...\n");
-    bool connected = false;
-    for(int i = 0; i < RECONNECT_ATTEMPS && !connected; i++, connected = gsm.connect()) {}
+    bool connected = gsm.connectWithAttempts(RECONNECT_ATTEMPS);
     
     if(connected) {
         testSocketGoogle();
@@ -29,7 +28,7 @@ void testSocketGoogle();
     } else {
         printf("Connection failed after %d times\n", RECONNECT_ATTEMPS);
     }
-}
+}*/
 
 void testSocketGoogle() {
     int socket_desc;
@@ -59,4 +58,4 @@ void testSocketGoogle() {
     ESP_LOGE(TAG, "Shutting down socket and restarting...");
     shutdown(sock, 0);
     close(sock);
-}*/
+}

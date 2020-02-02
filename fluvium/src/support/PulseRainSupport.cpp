@@ -33,6 +33,7 @@ metric::millimeter PulseRain::getRainQuantity() {
     portENTER_CRITICAL(&mutex);
     float returnValue = rainQuantity;
     portEXIT_CRITICAL(&mutex);
+    printf("Rain quantity: %lf\n", returnValue);
     return returnValue;
 }
 void PulseRain::reset() {
