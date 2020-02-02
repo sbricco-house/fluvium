@@ -1,6 +1,6 @@
 <template>
     <vl-map :controls="true" :load-tiles-while-interacting="true" class="map">
-        <vl-view :zoom.sync="zoom" :center="center" :rotation.sync="rotation"></vl-view>
+        <vl-view :zoom.sync="zoom" :center="center" :enable-rotation="false"></vl-view>
 
         <vl-layer-tile id="osm">
             <vl-source-osm attributions="fluvium powered by openstreemap"/>
@@ -17,7 +17,7 @@
             </vl-feature>
         </template>
 
-        <vl-interaction-select :features.sync="selectedFeatures"></vl-interaction-select>
+        <vl-interaction-select :features.sync="selectedFeatures" :hit-tolerance="96"></vl-interaction-select>
         
         </vl-map>
 </template>
@@ -42,7 +42,7 @@ export default {
       return {
         selectedFeatures: [],
         zoom: 16,
-        rotation: 0
+        resolution: undefined
       }
     },
     watch: {
