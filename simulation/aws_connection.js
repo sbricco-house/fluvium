@@ -5,6 +5,8 @@ AWS.config.update({
 })
 //iot framework used to create things in aws iot
 const iot = new AWS.Iot({apiVersion: '2015-05-28'})
+//dynamo framewoek used to put elements on dynamodb
+const dynamo = new AWS.DynamoDB.DocumentClient()
 //shadow framework used to update thing internal data
 const shadow = new AWS.IotData({
     apiVersion: '2015-05-28',
@@ -13,6 +15,7 @@ const shadow = new AWS.IotData({
 
 module.exports.iot = iot
 module.exports.shadow = shadow
+module.exports.dynamo = dynamo
 module.exports.dataCreation = function(data) {
     return {
         state : {

@@ -43,7 +43,7 @@
                             :data="levelWeek"
                 />
             </v-col>
-            <v-col cols="12" :md="12" :lg="6">
+            <v-col cols="12" :md="12" :lg="12">
                  <data-chart color="#00BCD4" 
                             title="Livello acqua" 
                             footerHistory="Ultimo mese" 

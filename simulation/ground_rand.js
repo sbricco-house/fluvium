@@ -25,4 +25,4 @@ function sinValue(iterationCount) {
     )
 }
 
-simulatation.simulate(sinValue, period) //each five minutes..
+simulatation.simulate(sinValue, period, process.argv[2])

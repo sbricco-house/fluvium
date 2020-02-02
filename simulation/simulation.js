@@ -7,11 +7,10 @@ const connection = require("./aws_connection")
 simulation publishing data at fixed time (period.).
 simulationLogic describe how to create data.
 */
-async function simulate(simulationLogic, period) {
+async function simulate(simulationLogic, period, name) {
     if(process.argv[2] == undefined) {
         console.log("error, name or river missing, pass : [deviceName] [river]")
     }
-    let name = process.argv[2]
     var iterationCount = 0
     //simulation loop
     setInterval(() => {

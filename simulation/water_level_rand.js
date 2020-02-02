@@ -23,4 +23,4 @@ function randomValue(iterationCount) {
         }
     )
 }
-simulatation.simulate(randomValue, period) //each five minutes..
+simulatation.simulate(randomValue, period, process.argv[2])
