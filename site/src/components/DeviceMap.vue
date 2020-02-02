@@ -10,8 +10,9 @@
             <vl-feature v-if="device.data['gps']" :key="device.name" :properties="device">
                 <vl-geom-point :coordinates="device | mapLatLon"></vl-geom-point>
                 <vl-style-box>
-                    <vl-style-icon v-if="isWaterlevelType(device)" :src="require('@/assets/waves.png')" :scale="1" :size="[36, 36]"/>
-                    <vl-style-icon v-else :src="require('@/assets/terrain.png')" :scale="1" :size="[36, 36]"/>
+                    <vl-style-icon v-if="isWaterlevelType(device) && alarm(device)" :src="require('@/assets/waves-alarm.png')" :scale="1" :size="[48, 48]"/>
+                    <vl-style-icon v-else-if="isWaterlevelType(device)" :src="require('@/assets/waves.png')" :scale="1" :size="[48, 48]"/>
+                    <vl-style-icon v-else :src="require('@/assets/terrain.png')" :scale="1" :size="[48, 48]"/>
                 </vl-style-box>
             </vl-feature>
         </template>
@@ -63,6 +64,9 @@ export default {
         },
         isWaterlevelType(device) {
             return device.name.split(':')[0] == "waterlevel";
+        },
+        alarm : function(device) {
+            return device.metaData.alarm === "true";
         }
     },
     computed: {

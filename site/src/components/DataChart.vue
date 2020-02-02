@@ -68,7 +68,7 @@ export default {
                 chart: {
                     type: 'line',
                     zoom: {
-                        enabled: false
+                        enabled: false 
                     },
                     toolbar: {
                         show: false
@@ -99,6 +99,8 @@ export default {
                     },
                 },
                 yaxis: {
+                    min : Math.min(...this.sensed) - 1,
+                    max : Math.max(...this.sensed) + 1,
                     labels: {
                         style: {
                             color : "#fff",
