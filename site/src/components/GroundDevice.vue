@@ -52,7 +52,7 @@
                             footerHistory="Ultimo giorno" 
                             icon = "mdi-water"
                             :dataFormat="formats.hour"
-                            :data="soilDay"/>
+                            :data="rainDay"/>
             </v-col>
             <v-col cols="12" :md="12" :lg="6">
                 <data-chart color="#2196F3" 
@@ -60,7 +60,7 @@
                             footerHistory="Ultimi 7 giorni" 
                             icon = "mdi-water"
                             :dataFormat="formats.day"
-                            :data="soilWeek"/>
+                            :data="rainWeek"/>
             </v-col>
             <v-col cols="12" :md="12" :lg="12">
                  <data-chart color="#2196F3" 
@@ -68,7 +68,7 @@
                             footerHistory="Ultimo mese" 
                             icon = "mdi-water"
                             :dataFormat="formats.monthAndDay"
-                            :data="soilMonth"/>
+                            :data="rainMonth"/>
             </v-col>
         </v-row>
     </v-container>
