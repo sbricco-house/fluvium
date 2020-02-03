@@ -1,8 +1,7 @@
 /*
 * base structure used to simulate a fluvium device.
 */
-//TODO Add gps information
-const connection = require("./aws_connection")
+const connection = require("../aws_connection")
 /*
 simulation publishing data at fixed time (period.).
 simulationLogic describe how to create data.
@@ -31,3 +30,11 @@ async function simulate(simulationLogic, period, name) {
 }
 
 module.exports.simulate = simulate
+
+module.exports.dataCreation = function(data) {
+    return {
+        state : {
+            reported : data
+        }
+    }
+}

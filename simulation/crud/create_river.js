@@ -1,8 +1,8 @@
 /**
  * this script allow to create a river group
  */
-const creation = require("./iot_creation")
-const io = require('./io.js');
+const creation = require("../iot_creation")
+const io = require('../io.js');
 
 var riverName = null
 var riverLength = null

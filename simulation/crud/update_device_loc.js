@@ -1,4 +1,4 @@
-const connection = require("./aws_connection")
+const connection = require("../aws_connection")
 
 if(process.argv.length < 5) {
     console.log("pass: [name] [lat] [long]")

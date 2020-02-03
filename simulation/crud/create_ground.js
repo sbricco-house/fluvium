@@ -1,8 +1,8 @@
 /**
  * this script create a device that sense the ground data
  */
-const creation = require("./iot_creation")
-const io = require('./io.js');
+const creation = require("../iot_creation")
+const io = require('../io.js');
 
 var deviceName = null
 io.question("[CREAZIONE DISPOSITIVO]; inserisci il nome: ")

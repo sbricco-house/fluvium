@@ -1,15 +1,15 @@
-const connection = require("./aws_connection")
+const connection = require("../aws_connection")
 const DYNAMO_DELAY = 1000
 const WRITE_CAPACITY_UNIT = 5
-const FIVE_MINUTES = 300000
+const HALF_HOUR = 1800000
 
 function dataCreation(river, deviceName, data) {
     return {
         PutRequest : {
             Item : {
-            "DeviceName" : deviceName,
-            "River" : river,
-            "Data" : data
+                "DeviceName" : deviceName,
+                "River" : river,
+                "Data" : data
             }
         }
     }
@@ -35,8 +35,7 @@ async function bulkSimulationLogic(from, to, deltaTime, targetTable, logic) {
             [targetTable] : elements   
         }
     }).promise()
-    console.log(result)
-    //PUT ELEMENTS
+    console.log("store items.. wait 1 second")
     setTimeout(bulkSimulationLogic, DYNAMO_DELAY, from, to, deltaTime, targetTable, logic);
 }
 
@@ -56,7 +55,7 @@ function timeIntervalSimulation(type, targetTable, logic) {
         case "WEEK": from.setDate(from.getDate() - 7)
         break
     }
-    bulkSimulation(from.getTime(), to, FIVE_MINUTES, targetTable, logic)
+    bulkSimulation(from.getTime(), to, HALF_HOUR, targetTable, logic)
 }
 
 module.exports.timeIntervalSimulation = timeIntervalSimulation

@@ -1,5 +1,4 @@
 const simulatation = require("./simulation")
-const connection = require("./aws_connection")
 
 if(process.argv.length < 6) {
     console.log("pass: [name] [max_delta] [std_value] [period]")
@@ -14,7 +13,7 @@ console.log("STANDARD VALUE = " + standardValue)
 console.log("PERIOD = " + period)
 function randomValue(iterationCount) {
     let waterLevelDelta = standardValue + (Math.random() * (2*maxDelta) - maxDelta)
-    return connection.dataCreation(
+    return simulatation.dataCreation(
         {
             water_level : {
                 delta: waterLevelDelta,

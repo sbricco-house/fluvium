@@ -1,5 +1,4 @@
 const simulatation = require("./simulation")
-const connection = require("./aws_connection")
 
 if(process.argv.length < 6) {
     console.log("pass: [name] [max_delta] [std_value] [period]")
@@ -13,7 +12,7 @@ console.log("DELTA = " + maxDelta)
 console.log("STANDARD VALUE = " + standardValue)
 function sinValue(iterationCount) {
     let waterLevelDelta = standardValue + Math.sin(iterationCount / 5) * maxDelta
-    return connection.dataCreation(
+    return simulatation.dataCreation(
         {
             water_level : {
                 delta: waterLevelDelta,
