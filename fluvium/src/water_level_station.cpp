@@ -37,7 +37,7 @@ const int PERIOD_CONSUMER = 8 * 60000; // 8 min
 const int PERIOD_WATER_LEVEL = 5 * 60000; // 5 min
 const int PERIOD_GPS = 10 * 60000; // 10 min
 
-const char* APN = "TM";
+const char* APN_GROUND = "TM";
 const gpio_num_t DS_PIN = GPIO_NUM_21;
 const uart_port_t GPS_SERIAL = UART_NUM_2;
 const gpio_num_t GPS_PIN = GPIO_NUM_12;
@@ -48,7 +48,7 @@ const int SAMPLING_COUNT = 10;
 
 const Buffer buffer(5);
 
-extern "C" void app_main(void);
+//extern "C" void app_main(void);
 
 void app_main(void) {
     boot::countBoot();
@@ -57,7 +57,7 @@ void app_main(void) {
     Parser* parsers[] { waterLevelParser, locationParser };
     task::ParserSet parserSet { parsers, 2 };
     //SETUP CONNECTION
-    network::Gsm net = networkfactory::createGsmTTGO(APN);
+    network::Gsm net = networkfactory::createGsmTTGO(APN_GROUND);
     //SETUP TIME AT FIRST BOOT
     boot::setupTimeAtFirstBoot(net);
     middleware::AwsPrivacyConfig privacySetting(

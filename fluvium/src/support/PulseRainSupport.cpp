@@ -3,10 +3,11 @@ using namespace support;
 #define BOUNDING_THR 300
         
 void PulseRain::PULSE_REC(void* arg) {
-    timeutils::millisecond current = timeutils::timestampMs();
     PulseRain* self = (PulseRain*)(arg);
     portENTER_CRITICAL_ISR(&self->mutex);
+    timeutils::millisecond current = timeutils::timestampMs();
     if(current - self->lastSensed < BOUNDING_THR) {
+        portEXIT_CRITICAL_ISR(&self->mutex);
         return;
     }
     self->lastSensed = current;
@@ -14,8 +15,6 @@ void PulseRain::PULSE_REC(void* arg) {
     portEXIT_CRITICAL_ISR(&self->mutex);
 }
 PulseRain::PulseRain(gpio_num_t pulsablePin, metric::millimeter deltaQuantity) : pulsablePin(pulsablePin), delta(deltaQuantity) {
-    semaphore = xSemaphoreCreateBinary();
-    xSemaphoreGive(semaphore);
     lastSensed = timeutils::timestampMs();
     mutex = portMUX_INITIALIZER_UNLOCKED;
     rainQuantity = 0;

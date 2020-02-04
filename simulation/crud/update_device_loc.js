@@ -13,8 +13,8 @@ let topic = "$aws/things/" + name + "/shadow/update"
 
 let data = connection.dataCreation({
     gps : {
-        lat : lat,
-        long : long,
+        latitude : lat,
+        longitude : long,
         altitude : 0,
         hdop : 1,
         fixTimestamp : Date.now()

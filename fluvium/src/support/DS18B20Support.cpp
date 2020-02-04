@@ -55,10 +55,10 @@ bool DS18B20::resetPulse(void) {
     ets_delay_us(500);
     gpio_set_level(pin, HIGH);
     gpio_set_direction(pin, GPIO_MODE_INPUT);
-    ets_delay_us(30);
-    gpio_get_level(pin);
+    ets_delay_us(30); 
+    auto LOW_LEVEL = gpio_get_level(pin);
     ets_delay_us(470);
-    return gpio_get_level(pin) == HIGH;
+    return gpio_get_level(pin) == HIGH && LOW_LEVEL == LOW;
 }
 void DS18B20::select() {
     sendByte(SELECT);
@@ -100,6 +100,6 @@ metric::celsius DS18B20::senseTemperature() {
         resetPulse();
         return temperature / 16.0;
     } else {
-        return 0;
+        return -1;
     }
 }

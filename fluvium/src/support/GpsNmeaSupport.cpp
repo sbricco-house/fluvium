@@ -40,6 +40,7 @@ void GpsNmea::gpsUpdateHandler(void* event_handler_arg, esp_event_base_t event_b
     switch (event_id)
     {
         case GPS_UPDATE: {
+            //printf("GPS: UPDATE RECEIVED\n");
             gps_t* gps = (gps_t*) event_data;
             gpsDevice->lastKnownLocation = *gps; // implict copy
             xEventGroupSetBits(gpsDevice->eventGroup, BIT0);

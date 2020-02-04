@@ -33,11 +33,11 @@ using namespace buffering::data;
 
 #define DEVICE_NAME "ground:cesena:1"
 
-const int PERIOD_CONSUMER = 8 * 60000; // 8 min
-const int PERIOD_GROUND = 20 * 60000; // 20 min
+const int PERIOD_CONSUMER = 8 * 1000; // 8 min
+const int PERIOD_GROUND = 20 * 1000; // 20 min
 
 const char* APN = "TM";
-const gpio_num_t REED_SWITCH_PIN = GPIO_NUM_12;
+const gpio_num_t REED_SWITCH_PIN = GPIO_NUM_23;
 const gpio_num_t SOIL_PIN = GPIO_NUM_2;
 const adc1_channel_t SOIL_INPUT_PIN = ADC1_CHANNEL_5;
 const adc_bits_width_t SOIL_PRECISION = ADC_WIDTH_BIT_9;
@@ -54,7 +54,8 @@ void app_main(void) {
     Parser* parsers[] { groundDataParser };
     task::ParserSet parserSet { parsers, 1 };
     //SETUP CONNECTION
-    network::Gsm net = networkfactory::createGsmTTGO(APN);
+    //network::Gsm net = networkfactory::createGsmTTGO(APN);
+    network::Wifi net = network::Wifi("DELL", "12345678");
     //SETUP TIME AT FIRST BOOT
     boot::setupTimeAtFirstBoot(net);
     middleware::AwsPrivacyConfig privacySetting(
@@ -70,6 +71,7 @@ void app_main(void) {
     middleware::AwsCoreService middleware(DEVICE_NAME, privacySetting, mqttConfig, iotConfig);
     //SETUP TIMESTAP TODO!
     //SENSORS CREATION
+    //SUPPORT CREATION
     support::PulseRain rainGauge(REED_SWITCH_PIN, DELTA_QUANTITY);
     support::SparkFunMoisture soilMoisture(SOIL_PIN, SOIL_INPUT_PIN, SOIL_PRECISION);
     //TASKs CREATION

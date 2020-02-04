@@ -42,6 +42,7 @@ void LocationTask::run() {
     gps.init();
     for(int i = 0; i < TARGET_NUMBER_SAMPLES; ) {   
         gps_t lastKnownLocation = gps.senseLastKnownLocation();
+        printf("GPS: Location: %f", lastKnownLocation.longitude);
         // only valid location are considered valid sample
         if(lastKnownLocation.valid) {
             if(currentBest == nullptr) {

@@ -1,4 +1,5 @@
 #include "support/SonarSupport.h"
+#include "esp_log.h"
 using namespace support;
 double Sonar::computeSoundVelocity(metric::celsius temp) {
     return SOUND_VEL + (TEMP_RELATION * temp);
@@ -29,6 +30,7 @@ void Sonar::init() {
 }  
 
 metric::meter Sonar::senseDistance(metric::celsius temperature) {
+    printf("temp = %f\n", temperature);
     //reset old state
     gpio_set_level(trigPin, LOW);
     ets_delay_us(RESET_TIME);
@@ -41,5 +43,6 @@ metric::meter Sonar::senseDistance(metric::celsius temperature) {
     xEventGroupWaitBits(group, BIT0, pdTRUE, pdTRUE, timeoutMeasurement);
     gpio_isr_handler_remove(echoPin);
     float distance = computeSoundVelocity(temperature) * (deltaTime / 2.0);
+    printf("DELTA = %f\n", deltaTime);
     return distance > maxDistance ? maxDistance : distance;
 }
