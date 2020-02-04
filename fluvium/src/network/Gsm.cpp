@@ -105,6 +105,7 @@ bool Gsm::waitDisconnectionDone() {
 
 // https://www.raviyp.com/sim900-sim800-sleep-mode-at-commands/
 bool Gsm::standby() {
+    
     // Enter to power save mode
     // 1. disconnect GPRS
     //if(!disconnect()) { return false; }

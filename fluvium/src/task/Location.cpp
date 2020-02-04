@@ -55,15 +55,16 @@ void LocationTask::run() {
         }
     }
     gps.deinit();
+    if(currentBest != nullptr) {    
+        printf("Fix time: %llu\nLatitude: %lf\nLongitude: %lf\nAltitude: %lf\nHDop: %lf\n",
+            currentBest->fixTimestamp,
+            currentBest->latitude,
+            currentBest->longitude,
+            currentBest->altitude,
+            currentBest->hdop);
 
-    printf("Fix time: %llu\nLatitude: %lf\nLongitude: %lf\nAltitude: %lf\nHDop: %lf\n",
-        currentBest->fixTimestamp,
-        currentBest->latitude,
-        currentBest->longitude,
-        currentBest->altitude,
-        currentBest->hdop);
-
-    buffer.queue(currentBest);
+        buffer.queue(currentBest);
+    }
 }
 LocationData* LocationTask::locationDataFromNmea(gps_t gps) {
     return new LocationData {

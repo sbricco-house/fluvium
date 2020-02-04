@@ -12,7 +12,7 @@ let lambda = {
     
         return new Promise((accept, reject) => {
             awsElements.lambda.invoke(params, (err, data) => {
-                if(!err) { 
+                if(!err) {
                     accept({
                         status: data.StatusCode,
                         data: JSON.parse(data.Payload)

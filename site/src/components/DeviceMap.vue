@@ -54,7 +54,7 @@ export default {
     },
     filters: {
         mapLatLon: function(device) {
-            if(!device  ) return [];
+            if(!device) return [];
             return geo.convertLatLngToCoordinate(device.data.gps);
         }
     },

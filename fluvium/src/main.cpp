@@ -27,15 +27,18 @@
 #include "task/Consumer.h"
 //SUPPORT UTILITIES
 #include "Boot.h"
+//POWER SAVE
+//#include "esp_pm.h"
 
 using namespace buffering;
 using namespace buffering::data;
 
+/*const char* APN = "TM";
 const gpio_num_t DS_PIN = GPIO_NUM_21; //GPIO where you connected ds18b20
 const uart_port_t GPS_SERIAL = UART_NUM_2;
-const gpio_num_t GPS_PIN = GPIO_NUM_16;
+const gpio_num_t GPS_PIN = GPIO_NUM_12;
 const gpio_num_t TRIG_PIN = GPIO_NUM_33;
-const gpio_num_t ECHO_PIN = GPIO_NUM_35;
+const gpio_num_t ECHO_PIN = GPIO_NUM_32;
 const gpio_num_t REED_SWITCH_PIN = GPIO_NUM_12;
 const gpio_num_t SOIL_PIN = GPIO_NUM_2;
 const adc1_channel_t SOIL_INPUT_PIN = ADC1_CHANNEL_5;
@@ -45,7 +48,7 @@ const int SAMPLING_COUNT = 10;
 
 const Buffer buffer(5);
 
-extern "C" void app_main(void);
+//extern "C" void app_main(void);
 
 void app_main(void) {
     boot::countBoot();
@@ -57,7 +60,8 @@ void app_main(void) {
     //SETUP POWER MANAGEMENT ! TODO
     //SETUP CONNECTION
     //network::Wifi net("TP-Link_6D7F", "68247461");
-    network::Gsm net = networkfactory::createGsmTTGO("iliad");
+    //network::FakeNetwork net;
+    network::Gsm net = networkfactory::createGsmTTGO(APN);
     //SETUP TIME AT FIRST BOOT
     boot::setupTimeAtFirstBoot(net);
     //middleware::FakeMiddleware middleware;
@@ -75,19 +79,23 @@ void app_main(void) {
     middleware::AwsCoreService middleware("waterlevel:cesena:1", privacySetting, mqttConfig, iotConfig);
     //SETUP TIMESTAP TODO!
     //SENSORS CREATION
-    //support::GpsNmea gps(GPS_SERIAL, GPS_PIN);
+    support::GpsNmea gps(GPS_SERIAL, GPS_PIN);
     support::DS18B20 ds18b20(DS_PIN, support::P9);
     support::Sonar sonar(TRIG_PIN, ECHO_PIN);
-    support::PulseRain rainGauge(REED_SWITCH_PIN, DELTA_QUANTITY);
-    support::SparkFunMoisture soilMoisture(SOIL_PIN, SOIL_INPUT_PIN, SOIL_PRECISION);
+    //support::PulseRain rainGauge(REED_SWITCH_PIN, DELTA_QUANTITY);
+    //support::SparkFunMoisture soilMoisture(SOIL_PIN, SOIL_INPUT_PIN, SOIL_PRECISION);
     //TASKs CREATION
     task::WaterLevelTask waterLevelTask(buffer, sonar, ds18b20, SAMPLING_COUNT);
-    //task::LocationTask locationTask(buffer, gps);
+    task::LocationTask locationTask(buffer, gps);
     task::Consumer consumer(buffer, middleware, net, parserSet);
     //task::GroundStationTask groundStationTask(buffer, soilMoisture, rainGauge, SAMPLING_COUNT);
-    task::Task::deployEsp32(waterLevelTask, 30000, 1024, "water_level");
+    task::Task::deployEsp32(waterLevelTask, 5 * 60000, 1024, "water_level"); // 5 min
     //task::Task::deployEsp32(groundStationTask, 30000, 2024, "ground_station");
-    task::Task::deployEsp32(consumer, 10000, 9012, "consumer");
-    //task::Task::deployEsp32(locationTask, 500, 4096, "gps");
+    task::Task::deployEsp32(consumer, 8 * 60000, 9012, "consumer");
+    task::Task::deployEsp32(locationTask, 10 * 60000, 4096, "gps"); // 10 min
+
+  //  esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_GPIO);
+  //  esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_UART);
+
     vTaskDelay(portMAX_DELAY);
-}
+}*/

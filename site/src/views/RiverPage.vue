@@ -80,8 +80,8 @@ export default {
         river : river.default,
     }),
     computed : {
-        deltaAvg : function() { return this.river.deltaLevelAvg + " m" },
-        rainQuantityAvg : function() { return this.river.rainQuantityAvg + " mm" },
+        deltaAvg : function() { return parseFloat(this.river.deltaLevelAvg).toFixed(2) + " m" },
+        rainQuantityAvg : function() { return parseFloat(this.river.rainQuantityAvg).toFixed(2) + " mm" },
         length : function() { return this.river.length  + " km" },
         devicesInAllarmCount() {
             let allarmCount = this.river.devices.filter(dev => dev.metaData.alarm === "true").length
