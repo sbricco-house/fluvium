@@ -11,6 +11,14 @@ export default {
     convertLatLngToCoordinate: function(latLng) {
         return [parseFloat(latLng[LONGITUDE_KEY]), parseFloat(latLng[LATITUDE_KEY])];
     },
+    convertBounginBoxToExtent(box) {
+        return [
+            box.topRight[LONGITUDE_KEY], 
+            box.topRight[LATITUDE_KEY], 
+            box.bottomLeft[LONGITUDE_KEY],
+            box.bottomLeft[LATITUDE_KEY]
+        ];
+    },
     calculateBoundingBox: function(latLongs) {
         let west = MAX_LONG;
         let east = MIN_LONG;

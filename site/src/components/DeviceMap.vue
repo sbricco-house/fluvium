@@ -1,6 +1,6 @@
 <template>
-    <vl-map :controls="true" :load-tiles-while-interacting="true" class="map">
-        <vl-view :zoom.sync="zoom" :center="center" :enable-rotation="false"></vl-view>
+    <vl-map data-projection="EPSG:4326" :controls="true" :load-tiles-while-interacting="true" class="map" ref="map">
+        <vl-view :center="center" :zoom="zoom" :enable-rotation="false" ref="mapView" ></vl-view>
 
         <vl-layer-tile id="osm">
             <vl-source-osm attributions="fluvium powered by openstreemap"/>
@@ -41,11 +41,15 @@ export default {
     data () {
       return {
         selectedFeatures: [],
-        zoom: 16,
-        resolution: undefined
+        resolution: undefined,
+        center: [12.493654,42.813583],
+        zoom: 5
       }
     },
     watch: {
+        devices(devices) {
+            this.fitMapView(devices)
+        },
         selectedFeatures(features) {
             if(features.length > 0) {
                 this.onMarkerClick(features[0].properties);
@@ -67,17 +71,18 @@ export default {
         },
         alarm : function(device) {
             return device.metaData.alarm === "true";
-        }
-    },
-    computed: {
-        center: function() {
+        },
+        fitMapView(devices) {
             if(this.devices && this.devices.length > 0) {
                 let validGpsDevices = this.devices.filter(dev => typeof(dev.data['gps']) !== 'undefined').map(dev => dev.data['gps']);
-                let boundingBox = geo.calculateBoundingBox(validGpsDevices);
-                let coords = geo.convertLatLngToCoordinate(geo.centerOfBoundingBox(boundingBox));
-                return coords;
+                let box = geo.calculateBoundingBox(validGpsDevices);
+                let extent = geo.convertBounginBoxToExtent(box);
+                this.$refs.mapView.fit(this.$refs.map.extentToViewProj(extent), {
+                    size: this.$refs.map.$map.getSize(),
+                    duration: 1000,
+                    maxZoom: 16
+                });
             }
-            return [0, 0];
         }
     }
 }
