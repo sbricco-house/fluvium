@@ -3,7 +3,6 @@ import awsElements from "@/aws-config"
 let subscriptions = {} //subscription map: link topic to callback
 //TODO docu
 awsElements.mqttClient.on("message", function(topic, message){ 
-    console.log(JSON.parse(message))
     if(subscriptions[topic] != undefined) {
         subscriptions[topic](JSON.parse(message))
     }

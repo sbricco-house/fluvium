@@ -29,7 +29,8 @@ function buildGroupParams(groupName, length, imageSrc, riverWatchPolicyName, des
                     deltaLevelAvg : "0",
                     rainQuantityAvg : "0",
                     riverWatchPolicyName : riverWatchPolicyName,
-                    state : "ok"
+                    state : "ok",
+                    timestamp : 0
                 },
                 merge : false
             },

@@ -108,7 +108,6 @@ export default {
             return "aggiornato : " + dateSensed.toLocaleString('it-IT', DateUtils.fullDate);
         },
         soilMoisture : function() {
-            console.log(this.device.data.ground)
             return this.device.data.ground.soil_moisture.toFixed(2) + " %"
         },
         rainQuantity : function() {

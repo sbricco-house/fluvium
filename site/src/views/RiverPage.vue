@@ -35,7 +35,7 @@
                             icon="mdi-swap-vertical-bold"
                             color="red"
                             footerIcon="mdi-history"
-                            footerDescription="aggiornato : adesso" />
+                            :footerDescription="lastUpdate" />
             </v-col>
                 
             <v-col cols="12" :sm="6" :md="4" :lg="3">
@@ -44,7 +44,7 @@
                             icon="mdi-water"
                             color="blue"
                             footerIcon="mdi-history"
-                            footerDescription="aggiornato : adesso"/>
+                            :footerDescription="lastUpdate"/>
             </v-col>
         </v-row>
         <v-row class="">
@@ -65,7 +65,7 @@ import DevicePage from '@/components/DevicePage.vue'
 import river from "@/model/river.js"
 import aws from "@/services/aws-lambda.js"
 import mqtt from "@/services/aws-mqtt.js"
-
+let DateUtils = require("@/dateUtils.js")
 export default {
     name : "river-page",
     props : {
@@ -97,6 +97,10 @@ export default {
                 case "pericolo" : return { icon : "mdi-alert-decagram", color : "error" }
                 default : return { icon : "mdi-check-all", color : "success"}
             }
+        },
+        lastUpdate : function() {
+            let date = new Date(parseInt(this.river.lastUpdate))
+            return "aggiornato : " + date.toLocaleString('it-IT', DateUtils.fullDate)
         }
 
     },

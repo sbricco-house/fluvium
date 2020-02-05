@@ -4,8 +4,8 @@ const defaultRiver = {
     length : 0,
     description : "",
     state : "ok",
-    devices : []
-
+    devices : [],
+    lastUpdate : 0
 }
 
 export default {

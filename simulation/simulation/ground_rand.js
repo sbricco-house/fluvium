@@ -16,7 +16,7 @@ function sinValue(iterationCount) {
     return simulatation.dataCreation(
         {
             ground : {
-                soil_moisture: util.map(rainQauntity, 0, maxWater, 0 , 100),
+                soil_moisture: utils.map(rainQauntity, 0, maxWater, 0 , 100),
                 rain_quantity: rainQauntity,
                 timestamp: Date.now()
             }

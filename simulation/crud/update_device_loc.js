@@ -1,5 +1,5 @@
 const connection = require("../aws_connection")
-
+const simulation = require("../simulation/simulation")
 if(process.argv.length < 5) {
     console.log("pass: [name] [lat] [long]")
     return
@@ -11,7 +11,7 @@ var name = process.argv[2]
 
 let topic = "$aws/things/" + name + "/shadow/update"
 
-let data = connection.dataCreation({
+let data = simulation.dataCreation({
     gps : {
         latitude : lat,
         longitude : long,

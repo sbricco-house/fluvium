@@ -42,7 +42,6 @@ export default {
         open : function(device){
             this.device = device,
             aws.subscribeShadow(device.name, (shadow) => {
-                console.log("SHADOW UPDATED : = " + JSON.stringify(shadow))
                 if(this.isWaterLevel(device)) {
                     device.data.water_level = shadow.state.reported.water_level
                 } else {
