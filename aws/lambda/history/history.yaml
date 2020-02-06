@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+Resources:
+  history:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs12.x
+      CodeUri: .
+      Description: ''
+      MemorySize: 128
+      Timeout: 3
+      Role: 'arn:aws:iam::037275668898:role/service-role/history-role-c9glzfq4'
+      Events:
+        IoTRule1:
+          Type: IoTRule
+          Properties:
+            Sql: >-
+              SELECT topic(3) AS thing_name, * FROM
+              '$aws/things/+/shadow/update'
