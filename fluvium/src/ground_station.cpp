@@ -46,9 +46,9 @@ const int SAMPLING_COUNT = 10;
 
 const Buffer buffer(5);
 
-extern "C" void app_main(void);
+//extern "C" void app_main(void);
 
-void app_main(void) {
+/*void app_main(void) {
     boot::countBoot();
     parser::GroundDataParser* groundDataParser = new parser::GroundDataParser();
     Parser* parsers[] { groundDataParser };
@@ -81,4 +81,4 @@ void app_main(void) {
     task::Task::deployEsp32(groundStationTask, PERIOD_GROUND, 2024, "ground_station");
     task::Task::deployEsp32(consumer, PERIOD_CONSUMER, 9012, "consumer");
     vTaskDelay(portMAX_DELAY);
-}
+}*/

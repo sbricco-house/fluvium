@@ -50,7 +50,7 @@ const Buffer buffer(5);
 
 //extern "C" void app_main(void);
 
-void app_main(void) {
+/*void app_main(void) {
     boot::countBoot();
     parser::WaterLevelParser* waterLevelParser = new parser::WaterLevelParser();
     parser::LocationParser* locationParser = new parser::LocationParser();
@@ -85,4 +85,4 @@ void app_main(void) {
     task::Task::deployEsp32(consumer, PERIOD_CONSUMER, 9012, "consumer");
     task::Task::deployEsp32(locationTask, PERIOD_GPS, 4096, "gps");
     vTaskDelay(portMAX_DELAY);
-}
+}*/

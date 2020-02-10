@@ -25,7 +25,7 @@ namespace support {
             Sonar(gpio_num_t trigPin,
                 gpio_num_t echoPin,
                 metric::meter maxDistance = 6.0,
-                timeutils::millisecond maxTimeout = 120);
+                timeutils::millisecond maxTimeout = 240);
             void init() override;
             metric::meter senseDistance(metric::celsius temperature) override;
         private:
