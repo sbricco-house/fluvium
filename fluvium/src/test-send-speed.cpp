@@ -32,7 +32,7 @@ using namespace buffering;
 using namespace buffering::data;
 
 #define DEVICE_NAME "waterlevel:cesena:1"
-
+/*
 const char* APN_SEND_SPEED = "TM";
 const gpio_num_t DS_PIN = GPIO_NUM_21;
 const uart_port_t GPS_SERIAL = UART_NUM_2;
@@ -84,4 +84,4 @@ void app_main(void) {
     }
     //TASKs CREATION
     vTaskDelay(portMAX_DELAY);
-}
+}*/
