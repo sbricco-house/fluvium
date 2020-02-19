@@ -1,5 +1,5 @@
 const connection = require("../aws_connection")
-const DYNAMO_DELAY = 1000
+const DYNAMO_DELAY = 500
 const WRITE_CAPACITY_UNIT = 5
 const HALF_HOUR = 1800000
 
@@ -14,10 +14,10 @@ function dataCreation(river, deviceName, data) {
         }
     }
 }
+
 function bulkSimulation(from, to, deltaTime,  targetTable, logic) { 
     setTimeout(bulkSimulationLogic, DYNAMO_DELAY, from, to, deltaTime, targetTable, logic)
 }
-
 
 async function bulkSimulationLogic(from, to, deltaTime, targetTable, logic) {
     if(from > to) {

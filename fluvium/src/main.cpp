@@ -19,8 +19,8 @@
 using namespace buffering;
 using namespace buffering;
 
-//#define DEVICE_NAME "waterlevel:cesena:1"
-#define DEVICE_NAME "ground:cesena:1"
+#define DEVICE_NAME "waterlevel:cesena:1"
+//#define DEVICE_NAME "ground:cesena:1"
 
 const char* APN_GSM = "TM";
 const Buffer buffer(5);
@@ -28,8 +28,8 @@ const Buffer buffer(5);
 extern "C" void app_main(void);
 
 void app_main(void) {
-    network::Wifi net = network::Wifi("DELL", "12345678");
-    //network::Gsm net = networkfactory::createGsmTTGO(APN_GSM);
+    //network::Wifi net = network::Wifi("DELL", "12345678");
+    network::Gsm net = networkfactory::createGsmTTGO(APN_GSM);
     middleware::AwsPrivacyConfig privacySetting(
         (const char *)certificate_pem_crt_start,
         (const char *)private_pem_key_start,
@@ -41,5 +41,5 @@ void app_main(void) {
     );
     middleware::AwsIotCoreConfig iotConfig { 1 };
     middleware::AwsCoreService middleware(DEVICE_NAME, privacySetting, mqttConfig, iotConfig);
-    launch_ground(buffer, net, middleware);
+    launch_waterlevel(buffer, net, middleware);
 }

@@ -29,11 +29,11 @@
 //SUPPORT UTILITIES
 #include "Boot.h"
 //COMMON
-const int PERIOD_CONSUMER = 8 * 60000; // 8 min
+const int PERIOD_CONSUMER = 1 * 60000; //  min
 const int SAMPLING_COUNT = 10;
-
-const int PERIOD_WATER_LEVEL = 5 * 60000; // 5 min
-const int PERIOD_GPS = 10 * 60000; // 10 min
+//real value gps = 10 MIN; consumer 8 MIN; waterlevel 5 MIN;
+const int PERIOD_WATER_LEVEL = 1 * 60000; // 1 min
+const int PERIOD_GPS = 1 * 60000; // 1 min
 const gpio_num_t DS_PIN = GPIO_NUM_21;
 const uart_port_t GPS_SERIAL = UART_NUM_2;
 const gpio_num_t GPS_PIN = GPIO_NUM_12;
@@ -63,8 +63,8 @@ void launch_waterlevel(const Buffer & buffer, network::Network& net, middleware:
     vTaskDelay(portMAX_DELAY);
 }
 
-const int PERIOD_GROUND = 5 * 1000 * 60; // 5 min
-const gpio_num_t REED_SWITCH_PIN = GPIO_NUM_23;
+const int PERIOD_GROUND = 1000 * 60; // 5 min
+const gpio_num_t REED_SWITCH_PIN = GPIO_NUM_18;
 const gpio_num_t SOIL_PIN = GPIO_NUM_2;
 const adc1_channel_t SOIL_INPUT_PIN = ADC1_CHANNEL_5;
 const adc_bits_width_t SOIL_PRECISION = ADC_WIDTH_BIT_9;

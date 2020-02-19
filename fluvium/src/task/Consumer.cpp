@@ -13,7 +13,9 @@ Consumer::Consumer(const Buffer& buffer, MiddlewareService& middleware, Network&
 void Consumer::run() {
     net.connectWithAttempts(CONFIG_NETWORK_RECONNECT_ATTEMTPS);
     auto error = middleware.connect();
-    if(error != ConnectionResult::OK) {
+    if(error != ConnectionResult::OK) {    
+        middleware.disconnect();
+        net.disconnect();
         ESP_LOGI(LOG_TAG, "no connection.. turn on sleep..");
         return;
     }
